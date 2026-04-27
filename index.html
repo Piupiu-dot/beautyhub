@@ -1,1 +1,19 @@
-<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>BeautyHub Schweiz</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Jost',sans-serif;background:#faf8f5;display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:20px}.container{max-width:480px}.logo{font-size:48px;font-weight:700;color:#1A1A2E;font-family:Georgia,serif;margin-bottom:8px}.tagline{color:#b8924a;font-size:18px;margin-bottom:32px}.status{background:#fff;border-radius:16px;padding:32px;box-shadow:0 2px 20px rgba(0,0,0,0.08)}.dot{width:12px;height:12px;background:#2D6A4F;border-radius:50%;display:inline-block;margin-right:8px}.status p{color:#4A4A4A;line-height:1.6}</style></head><body><div class="container"><div class="logo">BeautyHub</div><div class="tagline">Die Plattform fuer Schweizer Kosmetikfachleute</div><div class="status"><span class="dot"></span><strong>Plattform wird aufgebaut</strong><p style="margin-top:12px">Wir bauen fuer euch die beste Beauty-Plattform der Schweiz. Bald verfuegbar.</p></div></div></body></html>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BeautyHub Schweiz</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(async()=>{
+  const sb=supabase.createClient('https://ypdybccegznjlxzqqxut.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwZHliY2NlZ3puamx4enFxeHV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMTgzNjQsImV4cCI6MjA5MjY5NDM2NH0.hs3ssZBVDHqOu3ufn4mB3trrMzGuDsQfjnB9Q9rxixU');
+  const{data}=await sb.auth.getSession();
+  window.location.replace(data.session?'feed.html':'login.html');
+})();
+</script>
+</head>
+<body style="margin:0;background:#faf8f5;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif">
+<p style="color:#b8924a">Wird geladen...</p>
+</body>
+</html>
