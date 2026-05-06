@@ -2,142 +2,134 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import AppShell from '@/components/AppShell'
-import { supabase, Inserat } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 
-const KATEGORIEN = ['alle','geraete','produkte','mobel','kurse','sonstiges']
+const TYPEN = ['alle','checkliste','vorlage','info','gesetz']
 
-const DEMO: Inserat[] = [
-  { id: '1', titel: 'IPL Gerät Lumenis M22 - Top Zustand', beschreibung: 'Wenig benutzt, alle Handtücke vorhanden. Ideal für Haarentfernung und Gefässbehandlung. Serviciert 2024.', preis: 4800, kategorie: 'geraete', zustand: 'gebraucht', standort: 'Zürich' },
-  { id: '2', titel: 'Nagelfräser Dremel Professional Set', beschreibung: 'Komplettes Set mit 12 Bits, kaum benutzt.', preis: 120, kategorie: 'geraete', zustand: 'neu', standort: 'Bern' },
-  { id: '3', titel: 'Profi-Kosmetikliege klappbar weiss', beschreibung: 'Stabile Liege mit Memory-Foam Polster. 2 Jahre alt, sehr guter Zustand.', preis: 350, kategorie: 'mobel', zustand: 'gebraucht', standort: 'Basel' },
-  { id: '4', titel: 'PMU Kurs Grundlagen für Anfänger', beschreibung: '2-tägiger Intensivkurs in Zürich. Theorie und Praxis, Material inklusive.', preis: 480, kategorie: 'kurse', zustand: 'neu', standort: 'Zürich' },
+const DEMO = [
+  { id: '1', titel: 'Hygiene-Checkliste Kosmetikstudio (CH)', beschreibung: 'Vollständige Checkliste für die tägliche, wöchentliche und monatliche Hygiene. Konform mit Schweizer Gesundheitsvorschriften.', typ: 'checkliste', nischen: 'alle', seiten: 2, downloads: 234 },
+  { id: '2', titel: 'Einwilligungsformular Laser-Behandlung', beschreibung: 'Rechtssicheres Einwilligungsformular für Laserbehandlungen nach Schweizer Recht. Inkl. Aufklärung über Risiken und Nachsorge.', typ: 'vorlage', nischen: 'laser', seiten: 3, downloads: 189 },
+  { id: '3', titel: 'Einwilligungsformular PMU / Permanent Make-up', beschreibung: 'Vollständiges Einwilligungsformular für PMU-Behandlungen. REACH-Konformität und Nachsorgehinweise inklusive.', typ: 'vorlage', nischen: 'pmu', seiten: 4, downloads: 312 },
+  { id: '4', titel: 'Kosmetikverordnung Schweiz - Zusammenfassung', beschreibung: 'Kompakte Zusammenfassung der wichtigsten Punkte der Schweizer Kosmetikverordnung. Aktualisiert April 2026.', typ: 'gesetz', nischen: 'alle', seiten: 6, downloads: 456 },
+  { id: '5', titel: 'Laserklassen Übersicht - Zulassungspflichten CH', beschreibung: 'Infoblatt zu den Laserklassen 1-4 und den jeweiligen Zulassungspflichten in der Schweiz.', typ: 'info', nischen: 'laser', seiten: 2, downloads: 178 },
+  { id: '6', titel: 'Nachsorgeblatt Nageldesign / Gel', beschreibung: 'Professionelles Nachsorgeblatt für Gel- und Acrylnägel. Pflegehinweise, Haltbarkeit und Kontaktinformationen.', typ: 'vorlage', nischen: 'nagel', seiten: 1, downloads: 267 },
+  { id: '7', titel: 'REACH-konforme Pigmente - Verbotsliste 2026', beschreibung: 'Aktuelle Liste der verbotenen Pigmente für PMU und Tattoos. Stand: Januar 2026.', typ: 'gesetz', nischen: 'pmu', seiten: 3, downloads: 389 },
+  { id: '8', titel: 'Erstgespräch-Bogen Kosmetikberatung', beschreibung: 'Strukturierter Erstgesprächsbogen für die Kundenberatung. Anamnese, Kontraindikationen und Wunschbehandlung.', typ: 'vorlage', nischen: 'alle', seiten: 2, downloads: 203 },
 ]
 
-export default function MarktplatzPage() {
+const ICONS: Record<string, { bg: string; color: string; svg: React.ReactNode }> = {
+  checkliste: { bg: '#F0FFF4', color: '#2E7D32', svg: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" strokeWidth={2}><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg> },
+  vorlage:    { bg: '#F0F4FF', color: '#1565C0', svg: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1565C0" strokeWidth={2}><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> },
+  info:       { bg: '#FFF8F0', color: '#E65100', svg: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E65100" strokeWidth={2}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> },
+  gesetz:     { bg: '#FFF0F0', color: '#C0392B', svg: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C0392B" strokeWidth={2}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> },
+}
+
+const TYP_LABEL: Record<string, string> = { checkliste: 'Checkliste', vorlage: 'Vorlage', info: 'Infoblatt', gesetz: 'Gesetz' }
+
+export default function DokumentePage() {
   const router = useRouter()
-  const [inserate, setInserate] = useState<Inserat[]>([])
-  const [kat, setKat] = useState('alle')
-  const [sort, setSort] = useState('neu')
-  const [loading, setLoading] = useState(true)
+  const [docs, setDocs] = useState(DEMO)
+  const [typ, setTyp] = useState('alle')
+  const [search, setSearch] = useState('')
   const [avatar, setAvatar] = useState('M')
-  const [showModal, setShowModal] = useState(false)
-  const [detail, setDetail] = useState<Inserat | null>(null)
-  const [form, setForm] = useState({ titel: '', beschreibung: '', preis: '', kategorie: 'geraete', zustand: 'gebraucht', standort: '' })
-  const [user, setUser] = useState<any>(null)
+  const [detail, setDetail] = useState<typeof DEMO[0] | null>(null)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       if (!data.session) router.push('/login')
-      else { const n = data.session.user.user_metadata?.name || data.session.user.email || 'M'; setAvatar(n[0].toUpperCase()); setUser(data.session.user) }
+      else { const n = data.session.user.user_metadata?.name || data.session.user.email || 'M'; setAvatar(n[0].toUpperCase()) }
     })
   }, [router])
 
-  useEffect(() => { load() }, [kat, sort])
+  const filtered = docs.filter(d => {
+    const matchTyp = typ === 'alle' || d.typ === typ
+    const matchSearch = !search || d.titel.toLowerCase().includes(search.toLowerCase()) || d.beschreibung.toLowerCase().includes(search.toLowerCase())
+    return matchTyp && matchSearch
+  })
 
-  async function load() {
-    setLoading(true)
-    try {
-      let q = supabase.from('inserate').select('*').eq('aktiv', true)
-      if (kat !== 'alle') q = q.eq('kategorie', kat)
-      q = sort === 'preis_auf' ? q.order('preis', { ascending: true }) : sort === 'preis_ab' ? q.order('preis', { ascending: false }) : q.order('erstellt_am', { ascending: false })
-      const { data, error } = await q
-      setInserate(error || !data?.length ? DEMO.filter(d => kat === 'alle' || d.kategorie === kat) : data)
-    } catch { setInserate(DEMO) }
-    setLoading(false)
-  }
-
-  async function submitInserat() {
-    if (!form.titel || !form.preis || !user) return
-    const { error } = await supabase.from('inserate').insert({ ...form, preis: parseFloat(form.preis), verkaeuferin_id: user.id, aktiv: true })
-    if (!error) { setShowModal(false); setForm({ titel: '', beschreibung: '', preis: '', kategorie: 'geraete', zustand: 'gebraucht', standort: '' }); load() }
-  }
-
-  const inputCls = "w-full px-4 py-3 rounded-xl border-[1.5px] border-[#E8E0D5] bg-[#faf8f5] text-sm text-[#1A1A2E] outline-none focus:border-[#b8924a] focus:bg-white"
+  const grouped = TYPEN.filter(t => t !== 'alle').map(t => ({ typ: t, items: filtered.filter(d => d.typ === t) })).filter(g => g.items.length > 0)
 
   return (
     <AppShell>
       <div className="bg-white px-5 py-4 flex items-center justify-between border-b border-[#F0EAE0] sticky top-0 z-40">
-        <h1 className="font-serif text-2xl font-bold text-[#1A1A2E]">Marktplatz</h1>
-        <div className="flex items-center gap-2">
-          <button onClick={() => setShowModal(true)} className="bg-[#b8924a] text-white text-xs font-medium px-3 py-2 rounded-xl">+ Inserieren</button>
-          <button onClick={() => router.push('/profil')} className="w-9 h-9 rounded-full bg-[#b8924a] flex items-center justify-center text-white text-sm font-semibold">{avatar}</button>
+        <h1 className="font-serif text-2xl font-bold text-[#1A1A2E]">Dokumente</h1>
+        <button onClick={() => router.push('/profil')} className="w-9 h-9 rounded-full bg-[#b8924a] flex items-center justify-center text-white text-sm font-semibold">{avatar}</button>
+      </div>
+
+      {/* Search */}
+      <div className="bg-white border-b border-[#F0EAE0] px-4 py-3">
+        <div className="relative">
+          <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9A9A9A]" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Dokumente suchen..."
+            className="w-full pl-9 pr-4 py-2.5 rounded-xl border-[1.5px] border-[#E8E0D5] bg-[#faf8f5] text-sm outline-none focus:border-[#b8924a]"/>
         </div>
       </div>
 
       {/* Filter */}
-      <div className="bg-white border-b border-[#F0EAE0] px-4 py-3.5 overflow-x-auto no-scrollbar">
+      <div className="px-4 py-3.5 overflow-x-auto no-scrollbar">
         <div className="flex gap-2 whitespace-nowrap">
-          {KATEGORIEN.map(k => (
-            <button key={k} onClick={() => setKat(k)}
-              className={`px-4 py-2 rounded-full text-xs font-medium border-[1.5px] transition-all ${kat===k ? 'bg-[#1A1A2E] text-white border-[#1A1A2E]' : 'bg-white text-[#6B6B6B] border-[#E8E0D5]'}`}>
-              {k === 'alle' ? 'Alle' : k.charAt(0).toUpperCase() + k.slice(1)}
+          {TYPEN.map(t => (
+            <button key={t} onClick={() => setTyp(t)}
+              className={`px-4 py-2 rounded-full text-xs font-medium border-[1.5px] transition-all ${typ===t ? 'bg-[#1A1A2E] text-white border-[#1A1A2E]' : 'bg-white text-[#6B6B6B] border-[#E8E0D5]'}`}>
+              {t === 'alle' ? 'Alle' : TYP_LABEL[t]}
             </button>
           ))}
         </div>
       </div>
 
-      <div className="p-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
-        {loading ? <><div className="skeleton h-48"/><div className="skeleton h-48"/><div className="skeleton h-48"/><div className="skeleton h-48"/></> : inserate.map(ins => (
-          <div key={ins.id} onClick={() => setDetail(ins)}
-            className="bg-white rounded-2xl overflow-hidden shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all cursor-pointer">
-            <div className="h-32 bg-[#F5EFE8] flex items-center justify-center relative">
-              <svg width="40" height="40" viewBox="0 0 50 50" fill="none"><rect x="8" y="12" width="34" height="26" rx="4" stroke="#8a7055" strokeWidth="1.5"/><path d="M8 20h34" stroke="#8a7055" strokeWidth="1.5"/><circle cx="16" cy="16" r="2" stroke="#8a7055" strokeWidth="1.2"/></svg>
-              <span className={`absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-lg ${ins.zustand === 'neu' ? 'bg-[#E8F5E9] text-[#2E7D32]' : 'bg-[#FFF3E0] text-[#E65100]'}`}>{ins.zustand === 'neu' ? 'Neu' : 'Gebraucht'}</span>
-            </div>
-            <div className="p-3">
-              <p className="text-sm font-semibold text-[#1A1A2E] leading-tight line-clamp-2 mb-1">{ins.titel}</p>
-              <p className="font-serif text-lg font-bold text-[#b8924a]">CHF {Number(ins.preis).toLocaleString('de-CH')}</p>
-              <p className="text-xs text-[#9A9A9A] mt-0.5">{ins.standort}</p>
-            </div>
+      {/* Docs */}
+      <div className="px-4 pb-4">
+        {typ === 'alle' ? grouped.map(g => (
+          <div key={g.typ}>
+            <h3 className="text-xs font-semibold text-[#9A9A9A] uppercase tracking-widest mb-2 mt-2">{TYP_LABEL[g.typ]}en</h3>
+            <div className="space-y-2">{g.items.map(d => <DocCard key={d.id} doc={d} onOpen={() => setDetail(d)} />)}</div>
           </div>
-        ))}
+        )) : <div className="space-y-2 mt-2">{filtered.map(d => <DocCard key={d.id} doc={d} onOpen={() => setDetail(d)} />)}</div>}
+        {filtered.length === 0 && <div className="text-center py-16 text-sm text-[#9A9A9A]">Keine Dokumente gefunden</div>}
       </div>
 
       {/* Detail modal */}
       {detail && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-end justify-center" onClick={e => { if (e.target === e.currentTarget) setDetail(null) }}>
           <div className="bg-white rounded-t-3xl w-full max-w-xl p-6 pb-10">
-            <div className="h-44 bg-[#F5EFE8] rounded-2xl flex items-center justify-center mb-5">
-              <svg width="60" height="60" viewBox="0 0 50 50" fill="none"><rect x="8" y="12" width="34" height="26" rx="4" stroke="#8a7055" strokeWidth="1.5"/><path d="M8 20h34" stroke="#8a7055" strokeWidth="1.5"/><circle cx="16" cy="16" r="2" stroke="#8a7055" strokeWidth="1.2"/></svg>
+            <div className="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center" style={{ background: ICONS[detail.typ]?.bg }}>
+              {ICONS[detail.typ]?.svg}
             </div>
-            <h2 className="font-serif text-2xl font-bold text-[#1A1A2E] mb-2">{detail.titel}</h2>
-            <p className="font-serif text-3xl font-bold text-[#b8924a] mb-4">CHF {Number(detail.preis).toLocaleString('de-CH')}</p>
-            <div className="flex gap-2 mb-4">
-              {detail.kategorie && <span className="text-xs bg-[#F5EFE8] text-[#6B6B6B] px-3 py-1 rounded-full">{detail.kategorie}</span>}
-              {detail.zustand && <span className="text-xs bg-[#F5EFE8] text-[#6B6B6B] px-3 py-1 rounded-full">{detail.zustand}</span>}
-              {detail.standort && <span className="text-xs bg-[#F5EFE8] text-[#6B6B6B] px-3 py-1 rounded-full">{detail.standort}</span>}
+            <h2 className="font-serif text-xl font-bold text-[#1A1A2E] text-center mb-2">{detail.titel}</h2>
+            <p className="text-sm text-[#767676] text-center leading-relaxed mb-4">{detail.beschreibung}</p>
+            <div className="flex gap-2 justify-center flex-wrap mb-5">
+              <span className="text-xs bg-[#F5EFE8] text-[#b8924a] px-3 py-1 rounded-full font-medium">{TYP_LABEL[detail.typ]}</span>
+              {detail.nischen !== 'alle' && <span className="text-xs bg-[#F5EFE8] text-[#b8924a] px-3 py-1 rounded-full font-medium">{detail.nischen}</span>}
+              <span className="text-xs bg-[#F5EFE8] text-[#6B6B6B] px-3 py-1 rounded-full">{detail.seiten} Seiten</span>
+              <span className="text-xs bg-[#F5EFE8] text-[#6B6B6B] px-3 py-1 rounded-full">{detail.downloads}x heruntergeladen</span>
             </div>
-            <p className="text-sm text-[#5A5A5A] leading-relaxed mb-5">{detail.beschreibung}</p>
-            <button onClick={() => alert('Kontaktfunktion folgt!')} className="w-full py-4 bg-[#b8924a] text-white rounded-xl font-medium mb-2">Verkäuferin kontaktieren</button>
+            <button onClick={() => alert('Download folgt in Kürze!')} className="w-full py-4 bg-[#b8924a] text-white rounded-xl font-medium flex items-center justify-center gap-2 mb-2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Herunterladen
+            </button>
             <button onClick={() => setDetail(null)} className="w-full py-3 rounded-xl border-[1.5px] border-[#E8E0D5] text-[#6B6B6B] text-sm">Schliessen</button>
           </div>
         </div>
       )}
-
-      {/* New inserat modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-end justify-center" onClick={e => { if (e.target === e.currentTarget) setShowModal(false) }}>
-          <div className="bg-white rounded-t-3xl w-full max-w-xl p-6 pb-10 max-h-[90vh] overflow-y-auto">
-            <h2 className="font-serif text-xl font-bold text-[#1A1A2E] mb-5">Inserat erstellen</h2>
-            <div className="space-y-3">
-              <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">Titel</label><input className={inputCls} value={form.titel} onChange={e => setForm({...form, titel: e.target.value})} placeholder="z.B. IPL Gerät Lumenis"/></div>
-              <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">Beschreibung</label><textarea className={inputCls + ' resize-none h-20'} value={form.beschreibung} onChange={e => setForm({...form, beschreibung: e.target.value})} placeholder="Zustand, Alter, Zubehör..."/></div>
-              <div className="grid grid-cols-2 gap-3">
-                <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">Preis (CHF)</label><input type="number" className={inputCls} value={form.preis} onChange={e => setForm({...form, preis: e.target.value})} placeholder="0"/></div>
-                <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">Kategorie</label><select className={inputCls} value={form.kategorie} onChange={e => setForm({...form, kategorie: e.target.value})}><option value="geraete">Geräte</option><option value="produkte">Produkte</option><option value="mobel">Möbel</option><option value="kurse">Kurse</option><option value="sonstiges">Sonstiges</option></select></div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">Zustand</label><select className={inputCls} value={form.zustand} onChange={e => setForm({...form, zustand: e.target.value})}><option value="neu">Neu</option><option value="gebraucht">Gebraucht</option></select></div>
-                <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">Standort</label><input className={inputCls} value={form.standort} onChange={e => setForm({...form, standort: e.target.value})} placeholder="z.B. Zürich"/></div>
-              </div>
-            </div>
-            <div className="flex gap-2 mt-5">
-              <button onClick={() => setShowModal(false)} className="flex-1 py-3 rounded-xl border-[1.5px] border-[#E8E0D5] text-[#6B6B6B] text-sm">Abbrechen</button>
-              <button onClick={submitInserat} className="flex-[2] py-3 rounded-xl bg-[#b8924a] text-white text-sm font-medium">Veröffentlichen</button>
-            </div>
-          </div>
-        </div>
-      )}
     </AppShell>
+  )
+}
+
+function DocCard({ doc, onOpen }: { doc: any; onOpen: () => void }) {
+  const icon = ICONS[doc.typ] || ICONS.info
+  return (
+    <div onClick={onOpen} className="bg-white rounded-2xl p-4 flex items-center gap-3.5 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all cursor-pointer">
+      <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: icon.bg }}>{icon.svg}</div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-semibold text-[#1A1A2E] leading-tight mb-1 truncate">{doc.titel}</p>
+        <div className="flex items-center gap-2 text-xs text-[#9A9A9A]">
+          <span className="text-[#b8924a] font-medium">{TYP_LABEL[doc.typ]}</span>
+          {doc.nischen !== 'alle' && <span className="text-[#b8924a]">{doc.nischen}</span>}
+          <span>{doc.seiten} S.</span>
+          <span>{doc.downloads}x</span>
+        </div>
+      </div>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#b8924a" strokeWidth={2}><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    </div>
   )
 }
