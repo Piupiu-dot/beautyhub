@@ -3,9 +3,9 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
-const NISCHEN = ['laser','gesicht','nagel','pmu','wimpern','haar','med','aesthetik']
+const BEREICHE = ['Kosmetik & Ästhetik','Haare & Friseur','Nails','Lashes & Brows','Massage & Wellness','Permanent Make-up & Microblading','Medizinische Ästhetik','Andere']
+const NISCHEN = BEREICHE
 const KANTONE = ['AG','AI','AR','BE','BL','BS','FR','GE','GL','GR','JU','LU','NE','NW','OW','SG','SH','SO','SZ','TG','TI','UR','VD','VS','ZG','ZH']
-const BERUFE = ['Kosmetikerin','Laseristin','PMU-Artistin','Nageldesignerin','Wimperntylistin','Geschaeftsinhaberin','Ausbildnerin','Andere']
 
 export default function LoginPage() {
   const router = useRouter()
@@ -19,7 +19,9 @@ export default function LoginPage() {
   const [rName, setRName] = useState('')
   const [rEmail, setREmail] = useState('')
   const [rPw, setRPw] = useState('')
-  const [rBeruf, setRBeruf] = useState('')
+  const [rVorname, setRVorname] = useState('')
+  const [rNachname, setRNachname] = useState('')
+  const [rBereich, setRBereich] = useState('')
   const [rUnternehmen, setRUnternehmen] = useState('')
   const [rMitarbeiter, setRMitarbeiter] = useState('')
   const [rKanton, setRKanton] = useState('')
@@ -37,12 +39,27 @@ export default function LoginPage() {
   }
 
   async function step2() {
-    if (!rBeruf || !rKanton || rNischen.length === 0) return setMsg('Bitte Beruf, Kanton und mind. eine Nische waehlen.')
+    if (!rVorname || !rNachname || !rBereich || rNischen.length === 0) return setMsg('Bitte Vorname, Nachname, Bereich und mind. eine Nische waehlen.')
     setLoading(true); setMsg('')
-    const { error } = await supabase.auth.signUp({ email: rEmail, password: rPw, options: { data: { name: rName, berufsbezeichnung: rBeruf, unternehmen: rUnternehmen, kanton: rKanton, mitarbeiter: parseInt(rMitarbeiter)||1, nischen: rNischen } } })
+    const { error } = await supabase.auth.signUp({ email: rEmail, password: rPw, options: { data: { name: rName, vorname: rVorname, nachname: rNachname, bereich: rBereich, unternehmen: rUnternehmen, kanton: rKanton, mitarbeiter: parseInt(rMitarbeiter)||1, nischen: rNischen } } })
     setLoading(false)
     if (error) { setErr(true); setMsg(error.message) }
     else { setErr(false); setMsg('Konto erstellt! Weiterleitung...'); setTimeout(() => router.push('/feed'), 1500) }
+  }
+
+  async function handleForgotPw() {
+    if (!email) return setMsg('Bitte E-Mail eingeben fuer Passwort-Reset.')
+    setLoading(true); setMsg('')
+    const { error } = await supabase.auth.resetPasswordForEmail(email)
+    setLoading(false)
+    if (error) { setErr(true); setMsg(error.message) }
+    else { setErr(false); setMsg('E-Mail zum Zuruecksetzen wurde gesendet.') }
+  }
+
+  async function handleOAuth(provider: 'google'|'apple') {
+    setMsg('')
+    const { error } = await supabase.auth.signInWithOAuth({ provider })
+    if (error) { setErr(true); setMsg(error.message) }
   }
 
   const toggle = (n: string) => setRNischen(prev => prev.includes(n) ? prev.filter(x=>x!==n) : [...prev,n])
@@ -67,11 +84,27 @@ export default function LoginPage() {
           {tab === 'login' && (
             <div className="space-y-4">
               <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">E-Mail</label>
-                <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="deine@email.ch" className={ic}/></div>
+                <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="deine@email.com" className={ic}/></div>
               <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">Passwort</label>
                 <input type="password" value={pw} onChange={e=>setPw(e.target.value)} placeholder="Passwort" className={ic}/></div>
+              <div className="text-right -mt-1">
+                <button onClick={handleForgotPw} className="text-xs font-medium text-[#b8924a] hover:underline">Passwort vergessen?</button>
+              </div>
               <button onClick={handleLogin} disabled={loading} className="w-full py-4 bg-[#b8924a] text-white rounded-xl font-medium hover:bg-[#a07a3a] disabled:opacity-50">
                 {loading ? 'Anmelden...' : 'Anmelden'}
+              </button>
+              <div className="flex items-center gap-3 py-1">
+                <div className="flex-1 h-px bg-[#E8E0D5]"/>
+                <span className="text-[11px] text-[#9A9A9A] uppercase tracking-wider">oder</span>
+                <div className="flex-1 h-px bg-[#E8E0D5]"/>
+              </div>
+              <button onClick={()=>handleOAuth('google')} className="w-full py-3.5 rounded-xl border-[1.5px] border-[#E8E0D5] bg-white text-[#1A1A2E] text-sm font-medium flex items-center justify-center gap-2.5 hover:bg-[#faf8f5]">
+                <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.22V7.04H2.18a11 11 0 0 0 0 9.92l3.66-2.86z"/><path fill="#EA4335" d="M12 4.75c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 1.46 14.97.5 12 .5A11 11 0 0 0 2.18 7.04l3.66 2.84C6.71 6.68 9.14 4.75 12 4.75z"/></svg>
+                Mit Google anmelden
+              </button>
+              <button onClick={()=>handleOAuth('apple')} className="w-full py-3.5 rounded-xl border-[1.5px] border-[#1A1A2E] bg-[#1A1A2E] text-white text-sm font-medium flex items-center justify-center gap-2.5 hover:bg-black">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 12.04c-.03-2.6 2.12-3.85 2.22-3.91-1.21-1.77-3.09-2.01-3.76-2.04-1.6-.16-3.12.94-3.93.94-.81 0-2.06-.92-3.39-.89-1.74.03-3.35 1.01-4.25 2.57-1.81 3.14-.46 7.79 1.3 10.34.86 1.25 1.89 2.65 3.23 2.6 1.3-.05 1.79-.84 3.36-.84 1.57 0 2.01.84 3.39.81 1.4-.02 2.28-1.27 3.13-2.53.99-1.45 1.39-2.86 1.42-2.93-.03-.01-2.72-1.04-2.75-4.13zM14.6 4.4c.71-.87 1.2-2.07 1.06-3.27-1.03.04-2.28.69-3.02 1.55-.66.76-1.24 1.99-1.08 3.16 1.15.09 2.32-.58 3.04-1.44z"/></svg>
+                Mit Apple anmelden
               </button>
             </div>
           )}
@@ -79,9 +112,9 @@ export default function LoginPage() {
             <div className="space-y-4">
               <p className="text-xs text-[#9A9A9A] text-center">Schritt 1 von 2 - Zugangsdaten</p>
               <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">Name</label>
-                <input value={rName} onChange={e=>setRName(e.target.value)} placeholder="z.B. Ivana Bogosavljevic" className={ic}/></div>
+                <input value={rName} onChange={e=>setRName(e.target.value)} placeholder="z.B. Max Mustermann" className={ic}/></div>
               <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">E-Mail</label>
-                <input type="email" value={rEmail} onChange={e=>setREmail(e.target.value)} placeholder="deine@email.ch" className={ic}/></div>
+                <input type="email" value={rEmail} onChange={e=>setREmail(e.target.value)} placeholder="deine@email.com" className={ic}/></div>
               <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">Passwort (min. 8 Zeichen)</label>
                 <input type="password" value={rPw} onChange={e=>setRPw(e.target.value)} placeholder="••••••••" className={ic}/></div>
               <button onClick={() => { if(!rName||!rEmail||!rPw) return setMsg('Alle Felder ausfullen.'); if(rPw.length<8) return setMsg('Passwort min. 8 Zeichen.'); setMsg(''); setStep(2) }} className="w-full py-4 bg-[#b8924a] text-white rounded-xl font-medium">Weiter &rarr;</button>
@@ -90,12 +123,23 @@ export default function LoginPage() {
           {tab === 'register' && step === 2 && (
             <div className="space-y-4">
               <p className="text-xs text-[#9A9A9A] text-center">Schritt 2 von 2 - Dein Profil</p>
-              <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">Berufsbezeichnung *</label>
-                <select value={rBeruf} onChange={e=>setRBeruf(e.target.value)} className={ic}><option value="">Bitte waehlen...</option>{BERUFE.map(b=><option key={b} value={b}>{b}</option>)}</select></div>
-              <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">Unternehmensname</label>
-                <input value={rUnternehmen} onChange={e=>setRUnternehmen(e.target.value)} placeholder="z.B. Ivory Beauty" className={ic}/></div>
               <div className="grid grid-cols-2 gap-3">
-                <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">Kanton *</label>
+                <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">Vorname *</label>
+                  <input value={rVorname} onChange={e=>setRVorname(e.target.value)} placeholder="Max" className={ic}/></div>
+                <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">Nachname *</label>
+                  <input value={rNachname} onChange={e=>setRNachname(e.target.value)} placeholder="Mustermann" className={ic}/></div>
+              </div>
+              <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">Unternehmensname</label>
+                <input value={rUnternehmen} onChange={e=>setRUnternehmen(e.target.value)} placeholder="z.B. Beauty Studio" className={ic}/></div>
+              <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-2">Bereich *</label>
+                <div className="space-y-2">{BEREICHE.map(b=>(
+                  <label key={b} className={`flex items-center gap-3 px-4 py-3 rounded-xl border-[1.5px] cursor-pointer transition-colors ${rBereich===b?'border-[#b8924a] bg-[#faf8f5]':'border-[#E8E0D5] bg-white'}`}>
+                    <input type="radio" name="bereich" value={b} checked={rBereich===b} onChange={e=>setRBereich(e.target.value)} className="accent-[#b8924a]"/>
+                    <span className="text-sm text-[#1A1A2E]">{b}</span>
+                  </label>))}</div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">Kanton</label>
                   <select value={rKanton} onChange={e=>setRKanton(e.target.value)} className={ic}><option value="">Kanton</option>{KANTONE.map(k=><option key={k} value={k}>{k}</option>)}</select></div>
                 <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">Mitarbeitende</label>
                   <input type="number" min="1" value={rMitarbeiter} onChange={e=>setRMitarbeiter(e.target.value)} placeholder="1" className={ic}/></div>
