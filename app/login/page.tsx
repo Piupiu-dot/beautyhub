@@ -4,7 +4,15 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
 const BEREICHE = ['Kosmetik & Ästhetik','Haare & Friseur','Nails','Lashes & Brows','Massage & Wellness','Permanent Make-up & Microblading','Medizinische Ästhetik','Andere']
-const NISCHEN = BEREICHE
+const NISCHEN_GRUPPEN: { gruppe: string; nischen: string[] }[] = [
+  { gruppe: 'Kosmetik & Ästhetik', nischen: ['Haarentfernung (Wachs/Zucker)','Chemische Peelinge','Microneedling','Solarium/UV','Intimbehandlungen'] },
+  { gruppe: 'Medizinische Ästhetik', nischen: ['Haarentfernung (IPL/Laser)','Hyaluron/Filler','Körperformung/Kryolipolyse'] },
+  { gruppe: 'Nails', nischen: ['Nageldesign/Gel','Nagelpflege/Maniküre','Pediküre'] },
+  { gruppe: 'Lashes & Brows', nischen: ['Wimpernverlängerung/Lifting','Brow Styling/Lamination'] },
+  { gruppe: 'Permanent Make-up & Microblading', nischen: ['Microblading','Lippen PMU','Augenbrauen PMU','Eyeliner PMU'] },
+  { gruppe: 'Massage & Wellness', nischen: ['Massage klassisch','Lymphdrainage','Ayurveda/Ganzheitlich'] },
+  { gruppe: 'Haare & Friseur', nischen: ['Colorationen/Blondierungen','Haarverlängerung','Haarpflege/Behandlungen'] },
+]
 const KANTONE = ['AG','AI','AR','BE','BL','BS','FR','GE','GL','GR','JU','LU','NE','NW','OW','SG','SH','SO','SZ','TG','TI','UR','VD','VS','ZG','ZH']
 
 export default function LoginPage() {
@@ -112,13 +120,8 @@ export default function LoginPage() {
               </div>
               <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">Unternehmensname</label>
                 <input value={rUnternehmen} onChange={e=>setRUnternehmen(e.target.value)} placeholder="z.B. Beauty Studio" className={ic}/></div>
-              <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-2">Bereich *</label>
-                <div className="space-y-2">{BEREICHE.map(b=>(
-                  <label key={b} className={`flex items-center gap-3 px-4 py-3 rounded-xl border-[1.5px] cursor-pointer transition-colors ${rBereich===b?'border-[#b8924a] bg-[#faf8f5]':'border-[#E8E0D5] bg-white'}`}>
-                    <input type="radio" name="bereich" value={b} checked={rBereich===b} onChange={e=>setRBereich(e.target.value)} className="accent-[#b8924a]"/>
-                    <span className="text-sm text-[#1A1A2E]">{b}</span>
-                  </label>))}</div>
-              </div>
+              <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">Bereich *</label>
+                <select value={rBereich} onChange={e=>setRBereich(e.target.value)} className={ic}><option value="">Bereich auswählen...</option>{BEREICHE.map(b=><option key={b} value={b}>{b}</option>)}</select></div>
               <div className="grid grid-cols-2 gap-3">
                 <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">Kanton</label>
                   <select value={rKanton} onChange={e=>setRKanton(e.target.value)} className={ic}><option value="">Kanton</option>{KANTONE.map(k=><option key={k} value={k}>{k}</option>)}</select></div>
@@ -126,7 +129,12 @@ export default function LoginPage() {
                   <input type="number" min="1" value={rMitarbeiter} onChange={e=>setRMitarbeiter(e.target.value)} placeholder="1" className={ic}/></div>
               </div>
               <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-2">Nischen * (mind. 1)</label>
-                <div className="flex flex-wrap gap-2">{NISCHEN.map(n=>(<button key={n} onClick={()=>toggle(n)} className={`px-3 py-1.5 rounded-full text-xs font-medium border-[1.5px] ${rNischen.includes(n)?'bg-[#1A1A2E] text-white border-[#1A1A2E]':'bg-white text-[#6B6B6B] border-[#E8E0D5]'}`}>{n}</button>))}</div>
+                <div className="space-y-3 max-h-72 overflow-y-auto pr-1">{NISCHEN_GRUPPEN.map(g=>(
+                  <div key={g.gruppe}>
+                    <p className="text-[10px] font-semibold text-[#b8924a] uppercase tracking-wider mb-1.5">{g.gruppe}</p>
+                    <div className="flex flex-wrap gap-2">{g.nischen.map(n=>(
+                      <button key={n} onClick={()=>toggle(n)} className={`px-3 py-1.5 rounded-full text-xs font-medium border-[1.5px] transition-colors ${rNischen.includes(n)?'bg-[#b8924a] text-white border-[#b8924a]':'bg-white text-[#6B6B6B] border-[#E8E0D5] hover:border-[#b8924a]'}`}>{n}</button>))}</div>
+                  </div>))}</div>
               </div>
               <div className="flex gap-2">
                 <button onClick={()=>{setStep(1);setMsg('')}} className="flex-1 py-3.5 rounded-xl border-[1.5px] border-[#E8E0D5] text-[#6B6B6B] text-sm">&larr; Zurueck</button>
