@@ -63,11 +63,11 @@ export default function ProfilPage() {
         <h2 className="font-serif text-2xl font-bold text-[#1A1A2E]">{name}</h2>
         {form.berufsbezeichnung && <p className="text-sm text-[#b8924a] font-medium mt-1">{form.berufsbezeichnung}</p>}
         {form.unternehmen && <p className="text-sm text-[#6B6B6B] mt-0.5">{form.unternehmen}</p>}
-        {form.bereich && <div className="mt-2"><span className="inline-block px-3.5 py-1 rounded-full text-xs font-semibold bg-[#FFF8F0] text-[#b8924a] border border-[#EBD9B8]">{form.bereich}</span></div>}
-        <div className="flex items-center justify-center gap-3 mt-2 text-xs text-[#9A9A9A] flex-wrap">
-          {form.kanton && <span>📍 {form.kanton}</span>}
-          {form.mitarbeiter && <span>👥 {form.mitarbeiter} Mitarbeitende</span>}
+        <div className="flex items-center justify-center gap-2 mt-3 flex-wrap">
+          {form.bereich && <span className="px-3.5 py-1 rounded-full text-xs font-semibold bg-[#FFF8F0] text-[#b8924a] border border-[#EBD9B8]">{form.bereich}</span>}
+          {form.kanton && <span className="px-3.5 py-1 rounded-full text-xs font-medium bg-[#F0EBE4] text-[#6B6B6B]">📍 {form.kanton}</span>}
         </div>
+        {form.mitarbeiter && <p className="text-xs text-[#9A9A9A] mt-2">👥 {form.mitarbeiter} Mitarbeitende</p>}
         {form.bio && <p className="text-sm text-[#5A5A5A] mt-3 leading-relaxed max-w-xs mx-auto">{form.bio}</p>}
         {form.website && <a href={form.website} target="_blank" rel="noopener noreferrer" className="text-xs text-[#b8924a] mt-2 block">{form.website}</a>}
       </div>
@@ -75,7 +75,7 @@ export default function ProfilPage() {
       {nischen.length > 0 && (
         <div className="mx-4 mt-4 bg-white rounded-2xl shadow-sm overflow-hidden">
           <div className="px-4 py-3 border-b border-[#F5F0EA]"><p className="text-xs font-semibold text-[#9A9A9A] uppercase tracking-widest">Meine Nischen</p></div>
-          <div className="p-4 flex flex-wrap gap-2">{nischen.map(n=><span key={n} className="px-3.5 py-2 rounded-full text-xs font-medium bg-[#1A1A2E] text-white">{n}</span>)}</div>
+          <div className="p-4 flex flex-wrap gap-2">{nischen.map(n=><span key={n} className="px-3.5 py-2 rounded-full text-xs font-medium bg-[#f5f0eb] text-[#8a6d35] border border-[#EBD9B8]">{n}</span>)}</div>
         </div>
       )}
 
@@ -89,7 +89,7 @@ export default function ProfilPage() {
         </div>
       </div>
 
-      <div className="mx-4 mt-3 rounded-2xl overflow-hidden" style={{background:'linear-gradient(135deg,#1A1A2E,#2D2D4E)'}}>
+      <div className="mx-4 mt-3 rounded-2xl overflow-hidden" style={{background:'#1c2b4a'}}>
         <div className="p-5">
           <h3 className="font-serif text-lg font-bold text-white mb-2">App installieren</h3>
           <p className="text-xs text-white/70 mb-3">Fuege BeautyHub zum Homescreen hinzu.</p>

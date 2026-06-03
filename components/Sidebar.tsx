@@ -13,17 +13,17 @@ const NAV = [
 export default function Sidebar() {
   const path = usePathname()
   return (
-    <aside className="hidden lg:flex flex-col w-60 bg-white border-r border-[#F0EAE0] fixed top-0 left-0 h-full z-50 py-7">
-      <div className="px-6 pb-6 border-b border-[#F0EAE0] mb-3">
-        <h1 className="font-serif text-2xl font-bold text-[#1A1A2E]">BeautyHub</h1>
-        <span className="text-[10px] tracking-widest uppercase text-[#b8924a]">Schweiz</span>
+    <aside className="hidden lg:flex flex-col w-60 bg-white border-r border-[#e8e0d5] fixed top-0 left-0 h-full z-50 py-8">
+      <div className="px-7 pb-7 border-b border-[#e8e0d5] mb-4">
+        <h1 className="font-serif text-3xl font-bold text-[#1A1A2E] leading-none">BeautyHub</h1>
+        <span className="text-[11px] tracking-[0.25em] uppercase text-[#b8924a] mt-1.5 block">Schweiz</span>
       </div>
-      <nav className="flex flex-col gap-1 px-3">
+      <nav className="flex flex-col gap-2 px-3">
         {NAV.map(item => {
           const active = path.startsWith(item.href)
           return (
             <Link key={item.href} href={item.href}
-              className={`flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-medium transition-all ${active ? 'bg-[#FFF8F0] text-[#b8924a]' : 'text-[#6B6B6B] hover:bg-[#faf8f5]'}`}>
+              className={`flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-medium transition-all ${active ? 'bg-[#fdf6ec] text-[#b8924a]' : 'text-[#6B6B6B] hover:bg-[#faf8f5]'}`}>
               {item.icon}{item.label}
             </Link>
           )

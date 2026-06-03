@@ -39,6 +39,10 @@ export default function DokumentePage() {
         <h1 className="font-serif text-2xl font-bold text-[#1A1A2E]">BeautyHub</h1>
         <button onClick={() => router.push('/profil')} className="w-9 h-9 rounded-full bg-[#b8924a] flex items-center justify-center text-white text-sm font-semibold">{av}</button>
       </div>
+      <div className="m-4 rounded-2xl bg-[#f5f0eb] border border-[#EBD9B8] px-6 py-7 text-center">
+        <h2 className="font-serif text-2xl font-bold text-[#b8924a] mb-2">Dokumente &amp; Gesetzestexte</h2>
+        <p className="text-sm text-[#6B6B6B] max-w-md mx-auto leading-relaxed">Hier werden offizielle Dokumente und Gesetzestexte abgelegt.</p>
+      </div>
       <div className="bg-white border-b border-[#F0EAE0] px-4 py-3">
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Dokumente suchen..."
           className="w-full px-4 py-2.5 rounded-xl border-[1.5px] border-[#E8E0D5] bg-[#faf8f5] text-sm outline-none focus:border-[#b8924a]"/>

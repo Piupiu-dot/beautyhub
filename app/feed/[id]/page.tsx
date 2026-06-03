@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import AppShell from '@/components/AppShell'
 import { supabase } from '@/lib/supabase'
+import { findDemoPost } from '@/lib/demo'
 
 export default function DetailPage() {
   const router = useRouter()
@@ -24,8 +25,14 @@ export default function DetailPage() {
 
   async function loadPost() {
     setLoading(true)
-    const { data } = await supabase.from('posts').select('*').eq('id', id).single()
-    if (data) { setPost(data); setLikeCount(data.likes || 0) }
+    // UUID-Spalten lehnen Demo-IDs wie '1'/'c1' ab → Query in try/catch und auf Demo-Daten zurückfallen
+    let found: any = null
+    try {
+      const { data } = await supabase.from('posts').select('*').eq('id', id).maybeSingle()
+      if (data) found = data
+    } catch { /* ignoriert – Fallback unten */ }
+    if (!found) found = findDemoPost(id)
+    if (found) { setPost(found); setLikeCount(found.likes || 0) }
     setLoading(false)
   }
 
@@ -49,16 +56,16 @@ export default function DetailPage() {
     community: 'bg-[#E3F2FD] text-[#1565C0]',
   }
   const BADGE_LABEL: Record<string, string> = { gesetz:'Gesetz', trend:'Trend', news:'News', community:'Community' }
-  const GRAD: Record<string, { label: string; from: string; to: string }> = {
-    gesetz:    { label: 'Gesetz', from: '#b8924a', to: '#d4a85a' },
-    trend:     { label: 'Trend',  from: '#2d6a4f', to: '#40916c' },
-    news:      { label: 'News',   from: '#1d3557', to: '#457b9d' },
-    ki:        { label: 'KI',     from: '#6b2d8b', to: '#9b5de5' },
-    community: { label: 'Community', from: '#1d3557', to: '#457b9d' },
+  const TYP: Record<string, { label: string; color: string }> = {
+    gesetz:    { label: 'Gesetz', color: '#b8924a' },
+    trend:     { label: 'Trend',  color: '#2d6a4f' },
+    news:      { label: 'News',   color: '#1c2b4a' },
+    ki:        { label: 'KI',     color: '#6b4c8b' },
+    community: { label: 'Community', color: '#1c2b4a' },
   }
   const badgeCls = post ? (BADGE_MAP[post.typ] || BADGE_MAP.news) : ''
   const badgeLabel = post ? (BADGE_LABEL[post.typ] || 'News') : ''
-  const head = post ? (GRAD[post.ist_agent ? 'ki' : (GRAD[post.typ] ? post.typ : 'news')]) : GRAD.news
+  const head = post ? (TYP[post.ist_agent ? 'ki' : (TYP[post.typ] ? post.typ : 'news')]) : TYP.news
   const nische = post?.nischen?.split(',')[0]?.trim()
 
   if (loading) return (
@@ -94,8 +101,8 @@ export default function DetailPage() {
         <span className="font-serif text-base font-bold text-[#1A1A2E] truncate">{post.titel}</span>
       </div>
       <div className="bg-white">
-        <div className="w-full h-44 flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${head.from}, ${head.to})` }}>
-          <span className="font-serif text-4xl font-bold text-white uppercase tracking-[0.15em]">{head.label}</span>
+        <div className="w-full h-32 flex items-center justify-center" style={{ background: head.color }}>
+          <span className="font-serif text-3xl font-bold text-white uppercase tracking-[0.15em]">{head.label}</span>
         </div>
         <div className="p-5">
           <div className="flex flex-wrap gap-2 mb-3">
@@ -109,7 +116,7 @@ export default function DetailPage() {
             {post.erstellt_am && <span className="text-xs text-[#C0B0A0]">{new Date(post.erstellt_am).toLocaleDateString('de-CH')}</span>}
           </div>
           <div className="text-base text-[#3A3A3A] leading-relaxed space-y-3 mb-5">
-            {(post.zusammenfassung || post.inhalt || '').split('\n').filter(Boolean).map((p: string, i: number) => <p key={i}>{p}</p>)}
+            {(post.inhalt || post.zusammenfassung || '').split('\n').filter(Boolean).map((p: string, i: number) => <p key={i}>{p}</p>)}
           </div>
           <div className="flex items-center gap-3 py-4 border-t border-[#F0EAE0]">
             <button onClick={() => { setLiked(!liked); setLikeCount(c => c + (liked ? -1 : 1)) }}

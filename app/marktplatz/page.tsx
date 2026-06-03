@@ -61,8 +61,8 @@ export default function MarktplatzPage() {
       <div className="p-4 grid grid-cols-2 gap-3 md:grid-cols-3">
         {filtered.map(ins=>(
           <div key={ins.id} onClick={()=>{setDetail(ins);setChat(false);setHistory([])}} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all cursor-pointer">
-            <div className="h-28 bg-[#F5EFE8] flex items-center justify-center relative">
-              <svg width="36" height="36" viewBox="0 0 50 50" fill="none"><rect x="8" y="12" width="34" height="26" rx="4" stroke="#8a7055" strokeWidth="1.5"/><path d="M8 20h34" stroke="#8a7055" strokeWidth="1.5"/></svg>
+            <div className="h-28 bg-[#f5f0eb] flex items-center justify-center relative px-3">
+              <span className="font-serif text-lg font-semibold text-[#b8924a] text-center leading-tight">{KAT_LABELS[ins.kategorie]||ins.kategorie}</span>
               <span className={`absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-lg ${ins.zustand==='neu'?'bg-[#E8F5E9] text-[#2E7D32]':'bg-[#FFF3E0] text-[#E65100]'}`}>{ins.zustand==='neu'?'Neu':'Gebraucht'}</span>
             </div>
             <div className="p-3">
@@ -81,8 +81,8 @@ export default function MarktplatzPage() {
             {!chat ? (
               <div className="overflow-y-auto p-5 pb-6">
                 <div className="w-12 h-1 bg-[#E0D8D0] rounded-full mx-auto mb-4"/>
-                <div className="h-36 bg-[#F5EFE8] rounded-2xl flex items-center justify-center mb-4">
-                  <svg width="50" height="50" viewBox="0 0 50 50" fill="none"><rect x="8" y="12" width="34" height="26" rx="4" stroke="#8a7055" strokeWidth="1.5"/><path d="M8 20h34" stroke="#8a7055" strokeWidth="1.5"/></svg>
+                <div className="h-36 bg-[#f5f0eb] rounded-2xl flex items-center justify-center mb-4 px-4">
+                  <span className="font-serif text-2xl font-semibold text-[#b8924a] text-center">{KAT_LABELS[detail.kategorie]||detail.kategorie}</span>
                 </div>
                 <h2 className="font-serif text-xl font-bold text-[#1A1A2E] mb-1">{detail.titel}</h2>
                 <p className="font-serif text-3xl font-bold text-[#b8924a] mb-3">CHF {Number(detail.preis).toLocaleString('de-CH')}</p>
