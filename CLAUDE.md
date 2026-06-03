@@ -26,3 +26,12 @@ Live-URL: https://www.thebeautyhub.ch
 - [ ] 6. Landing Page erstellen (öffentlich zugänglich)
 - [x] 7. Ladeindikator beim Absenden
 - [ ] 8. Profilbild Upload
+
+## Login/Registrierung – aktueller Stand (app/login/page.tsx)
+- Slogan unter Logo: "Die Plattform für Schweizer Beauty-Profis"
+- Goldener Fokus-Ring (#b8924a, 2px) auf allen Input-/Select-Feldern
+- Tab-Wechsel-Links: "Noch kein Konto? Jetzt registrieren" / "Bereits registriert? Jetzt anmelden"
+- Passwort-Toggle (Auge) auf Login + beiden Registrierungs-Passwortfeldern
+- Schritt 1 "Zugangsdaten": E-Mail, Passwort, Passwort wiederholen (kein Name-Feld mehr)
+- Schritt 2 "Dein Profil": Vorname/Nachname, Unternehmensname (Pflicht), Kanton, Mitarbeitende, Bereich (Dropdown), Nischen (Pills)
+- Offen: Seiten /agb und /datenschutz existieren noch nicht (Checkbox-Links → 404)
