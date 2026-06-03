@@ -3,9 +3,9 @@ import BottomNav from './BottomNav'
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen bg-[#faf8f5]">
+    <div className="flex min-h-screen bg-[#faf8f5] overflow-x-hidden">
       <Sidebar />
-      <main className="flex-1 lg:ml-60 pb-20 lg:pb-0">
+      <main className="flex-1 lg:ml-60 pb-20 lg:pb-0 w-full min-w-0 overflow-x-hidden">
         {children}
       </main>
       <BottomNav />
