@@ -11,9 +11,12 @@ Live-URL: https://www.thebeautyhub.ch
 - Domain: thebeautyhub.ch (Infomaniak)
 
 ## Konventionen
-- Sprache UI: Deutsch
+- Sprache UI: Deutsch (Schweizer Hochdeutsch – KEIN ß! Immer "ss": weiss, Schliessen, grösste, Strasse)
 - Auth: Supabase Email/Passwort (kein Google/Apple – B2B)
-- Farbschema: Cremeton, Gold, Dunkelblau
+- Farbschema: Cremeton (#faf8f5), Gold (#b8924a), Dunkelblau (#1A1A2E)
+- Header auf allen App-Seiten: "BeautyHub" als Logo oben links
+- Feed/Community 1-spaltig (volle Breite), Marktplatz 2-spaltig (md: 3-spaltig)
+- Filter-/Kategorie-Keys (z.B. laser, geraete, mobel) sind INTERNE Filterwerte → nicht umbenennen, nur Label-Maps für die Anzeige
 - Nach jeder Änderung: git add . && git commit -m "..." && git push
 
 ## Offene Aufgaben (Priorität)
@@ -35,3 +38,12 @@ Live-URL: https://www.thebeautyhub.ch
 - Schritt 1 "Zugangsdaten": E-Mail, Passwort, Passwort wiederholen (kein Name-Feld mehr)
 - Schritt 2 "Dein Profil": Vorname/Nachname, Unternehmensname (Pflicht), Kanton, Mitarbeitende, Bereich (Dropdown), Nischen (Pills)
 - Offen: Seiten /agb und /datenschutz existieren noch nicht (Checkbox-Links → 404)
+
+## App-UI – aktueller Stand
+- Feed-Karten (components/PostCard.tsx): kein Bild mehr, stattdessen Gradient-Header pro Kategorie
+  (Gesetz=Gold, Trend=Grün, News=Blau, KI=Lila; KI greift bei ist_agent). Label gross/weiss zentriert.
+  Detailseite feed/[id] nutzt denselben Gradient-Hero.
+- Filter-Labels Feed/Community: Laser & IPL, Gesicht & Haut, Nails, PMU, Lashes & Brows, Haare, Medizinisch
+- Marktplatz-Labels: Geräte, Produkte, Möbel, Kurse, Sonstiges; Button "+ Inserat erstellen"
+- Profil: Bereich als goldenes Badge, Nischen-Pills, Kanton/Mitarbeitende; Abmelden mit Bestätigungsdialog ("Wirklich abmelden?")
+- Detailseite "Beitrag nicht gefunden": Illustration + Button "Zurück zum Feed"

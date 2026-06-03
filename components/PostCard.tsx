@@ -8,18 +8,24 @@ const BADGE: Record<string, { label: string; cls: string }> = {
   community: { label: 'Community', cls: 'bg-[#E3F2FD] text-[#1565C0]' },
 }
 
+const GRAD: Record<string, { label: string; from: string; to: string }> = {
+  gesetz:    { label: 'Gesetz', from: '#b8924a', to: '#d4a85a' },
+  trend:     { label: 'Trend',  from: '#2d6a4f', to: '#40916c' },
+  news:      { label: 'News',   from: '#1d3557', to: '#457b9d' },
+  ki:        { label: 'KI',     from: '#6b2d8b', to: '#9b5de5' },
+  community: { label: 'Community', from: '#1d3557', to: '#457b9d' },
+}
+
 export default function PostCard({ post }: { post: Post }) {
   const badge = BADGE[post.typ] || BADGE.news
   const nische = post.nischen?.split(',')[0]?.trim()
+  const headKey = post.ist_agent ? 'ki' : (GRAD[post.typ] ? post.typ : 'news')
+  const head = GRAD[headKey]
   return (
     <Link href={`/feed/${post.id}`}
       className="block bg-white rounded-2xl overflow-hidden shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all cursor-pointer w-full">
-      <div className="h-32 bg-[#F5EFE8] flex items-center justify-center">
-        <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
-          <circle cx="30" cy="30" r="22" stroke="#8a7055" strokeWidth="1.5"/>
-          <path d="M22 30 Q30 18 38 30 Q30 42 22 30Z" stroke="#8a7055" strokeWidth="1.5" fill="none"/>
-          <circle cx="30" cy="30" r="4" stroke="#8a7055" strokeWidth="1.5"/>
-        </svg>
+      <div className="h-28 flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${head.from}, ${head.to})` }}>
+        <span className="font-serif text-3xl font-bold text-white uppercase tracking-[0.15em]">{head.label}</span>
       </div>
       <div className="p-4">
         <div className="flex items-center gap-2 mb-2 flex-wrap">

@@ -49,8 +49,16 @@ export default function DetailPage() {
     community: 'bg-[#E3F2FD] text-[#1565C0]',
   }
   const BADGE_LABEL: Record<string, string> = { gesetz:'Gesetz', trend:'Trend', news:'News', community:'Community' }
+  const GRAD: Record<string, { label: string; from: string; to: string }> = {
+    gesetz:    { label: 'Gesetz', from: '#b8924a', to: '#d4a85a' },
+    trend:     { label: 'Trend',  from: '#2d6a4f', to: '#40916c' },
+    news:      { label: 'News',   from: '#1d3557', to: '#457b9d' },
+    ki:        { label: 'KI',     from: '#6b2d8b', to: '#9b5de5' },
+    community: { label: 'Community', from: '#1d3557', to: '#457b9d' },
+  }
   const badgeCls = post ? (BADGE_MAP[post.typ] || BADGE_MAP.news) : ''
   const badgeLabel = post ? (BADGE_LABEL[post.typ] || 'News') : ''
+  const head = post ? (GRAD[post.ist_agent ? 'ki' : (GRAD[post.typ] ? post.typ : 'news')]) : GRAD.news
   const nische = post?.nischen?.split(',')[0]?.trim()
 
   if (loading) return (
@@ -63,9 +71,15 @@ export default function DetailPage() {
 
   if (!post) return (
     <AppShell>
-      <div className="text-center py-20 text-[#9A9A9A]">
-        <p>Beitrag nicht gefunden.</p>
-        <button onClick={() => router.back()} className="mt-4 text-[#b8924a] font-semibold">Zurueck</button>
+      <div className="flex flex-col items-center justify-center text-center px-6 py-24">
+        <div className="w-24 h-24 rounded-full bg-[#F5EFE8] flex items-center justify-center mb-6">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#b8924a" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/>
+          </svg>
+        </div>
+        <h2 className="font-serif text-2xl font-bold text-[#1A1A2E] mb-2">Beitrag nicht gefunden</h2>
+        <p className="text-sm text-[#9A9A9A] max-w-xs mb-6">Dieser Beitrag existiert nicht mehr oder wurde entfernt.</p>
+        <button onClick={() => router.push('/feed')} className="px-6 py-3.5 bg-[#b8924a] text-white rounded-xl font-medium hover:bg-[#a07a3a] transition-colors">Zurück zum Feed</button>
       </div>
     </AppShell>
   )
@@ -75,17 +89,13 @@ export default function DetailPage() {
       <div className="bg-white px-4 py-3.5 flex items-center gap-3 border-b border-[#F0EAE0] sticky top-0 z-40">
         <button onClick={() => router.back()} className="flex items-center gap-1.5 text-[#b8924a] text-sm font-semibold flex-shrink-0">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><polyline points="15 18 9 12 15 6"/></svg>
-          Zurueck
+          Zurück
         </button>
         <span className="font-serif text-base font-bold text-[#1A1A2E] truncate">{post.titel}</span>
       </div>
       <div className="bg-white">
-        <div className="w-full h-44 bg-[#F5EFE8] flex items-center justify-center">
-          <svg width="70" height="70" viewBox="0 0 70 70" fill="none">
-            <circle cx="35" cy="35" r="25" stroke="#8a7055" strokeWidth="1.5"/>
-            <path d="M24 35 Q35 21 46 35 Q35 49 24 35Z" stroke="#8a7055" strokeWidth="1.5" fill="none"/>
-            <circle cx="35" cy="35" r="5" stroke="#8a7055" strokeWidth="1.5"/>
-          </svg>
+        <div className="w-full h-44 flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${head.from}, ${head.to})` }}>
+          <span className="font-serif text-4xl font-bold text-white uppercase tracking-[0.15em]">{head.label}</span>
         </div>
         <div className="p-5">
           <div className="flex flex-wrap gap-2 mb-3">
@@ -126,7 +136,7 @@ export default function DetailPage() {
               className="w-full border-[1.5px] border-[#E8E0D5] rounded-xl px-3 py-2.5 text-sm bg-[#faf8f5] resize-none outline-none focus:border-[#b8924a] mb-2"/>
             <button onClick={submitKommentar} disabled={submitting || !kommentar.trim()}
               className="w-full py-3 bg-[#b8924a] text-white rounded-xl font-medium text-sm disabled:opacity-50">
-              {submitting ? 'Wird gespeichert...' : 'Kommentar veroeffentlichen'}
+              {submitting ? 'Wird gespeichert...' : 'Kommentar veröffentlichen'}
             </button>
           </div>
         ) : (

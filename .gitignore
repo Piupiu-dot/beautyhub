@@ -3,3 +3,7 @@ node_modules/
 .env.local
 .env
 out/
+
+# Next.js auto-generated
+next-env.d.ts
+.next/

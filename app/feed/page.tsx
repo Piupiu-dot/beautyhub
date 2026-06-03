@@ -6,12 +6,13 @@ import PostCard from '@/components/PostCard'
 import { supabase, Post } from '@/lib/supabase'
 
 const NISCHEN = ['alle','laser','gesicht','nagel','pmu','wimpern','haar','med']
+const NISCHEN_LABELS: Record<string, string> = { alle:'Alle', laser:'Laser & IPL', gesicht:'Gesicht & Haut', nagel:'Nails', pmu:'PMU', wimpern:'Lashes & Brows', haar:'Haare', med:'Medizinisch' }
 const SORTS = [{ key:'neu',label:'Aktuell'},{key:'beliebt',label:'Beliebt'},{key:'gesetz',label:'Gesetze'},{key:'trend',label:'Trends'}]
 const DEMO: Post[] = [
-  {id:'1',titel:'Neue Laserklassen-Vorschriften 2026',zusammenfassung:'Das Gesundheitsamt hat aktualisierte Richtlinien fuer Lasergeraete ab Klasse 3B erlassen. Ab Juli 2026 ist eine erweiterte Zertifizierung erforderlich.',typ:'gesetz',nischen:'laser',quelle_name:'BAG Schweiz',likes:24,ist_agent:true},
-  {id:'2',titel:'PMU-Pigmente: EU-Richtlinie jetzt relevant',zusammenfassung:'Die REACH-Verordnung schraenkt weitere Pigmentfarben ein. Betroffen sind Blau- und Gruentoene fuer permanentes Make-up.',typ:'gesetz',nischen:'pmu',quelle_name:'Swissmedic',likes:18,ist_agent:true},
-  {id:'3',titel:'Bio-Fermentation: Der groesste Beauty-Trend 2026',zusammenfassung:'Fermentierte Wirkstoffe verbessern die Bioverffügbarkeit von Vitaminen und staerken die Hautbarriere messbar.',typ:'trend',nischen:'gesicht',quelle_name:'Cosmetica Suisse',likes:41,ist_agent:true},
-  {id:'4',titel:'Neue Erkenntnisse zu Gel-Systemen bei Naegeln',zusammenfassung:'Pausen zwischen Gel-Applikationen reduzieren Schaeden um 60 Prozent.',typ:'news',nischen:'nagel',quelle_name:'SDKF',likes:35,ist_agent:false},
+  {id:'1',titel:'Neue Laserklassen-Vorschriften 2026',zusammenfassung:'Das Gesundheitsamt hat aktualisierte Richtlinien für Lasergeräte ab Klasse 3B erlassen. Ab Juli 2026 ist eine erweiterte Zertifizierung erforderlich.',typ:'gesetz',nischen:'laser',quelle_name:'BAG Schweiz',likes:24,ist_agent:true},
+  {id:'2',titel:'PMU-Pigmente: EU-Richtlinie jetzt relevant',zusammenfassung:'Die REACH-Verordnung schränkt weitere Pigmentfarben ein. Betroffen sind Blau- und Grüntöne für permanentes Make-up.',typ:'gesetz',nischen:'pmu',quelle_name:'Swissmedic',likes:18,ist_agent:true},
+  {id:'3',titel:'Bio-Fermentation: Der grösste Beauty-Trend 2026',zusammenfassung:'Fermentierte Wirkstoffe verbessern die Bioverfügbarkeit von Vitaminen und stärken die Hautbarriere messbar.',typ:'trend',nischen:'gesicht',quelle_name:'Cosmetica Suisse',likes:41,ist_agent:true},
+  {id:'4',titel:'Neue Erkenntnisse zu Gel-Systemen bei Nägeln',zusammenfassung:'Pausen zwischen Gel-Applikationen reduzieren Schäden um 60 Prozent.',typ:'news',nischen:'nagel',quelle_name:'SDKF',likes:35,ist_agent:false},
 ]
 
 export default function FeedPage() {
@@ -56,7 +57,7 @@ export default function FeedPage() {
           {NISCHEN.map(n => (
             <button key={n} onClick={() => setNische(n)}
               className={`px-4 py-2 rounded-full text-xs font-medium border-[1.5px] transition-all flex-shrink-0 ${nische===n ? 'bg-[#1A1A2E] text-white border-[#1A1A2E]' : 'bg-white text-[#6B6B6B] border-[#E8E0D5]'}`}>
-              {n==='alle' ? 'Alle' : n.charAt(0).toUpperCase()+n.slice(1)}
+              {NISCHEN_LABELS[n] || n}
             </button>
           ))}
         </div>
@@ -69,7 +70,7 @@ export default function FeedPage() {
           </button>
         ))}
       </div>
-      <div className="p-4 grid gap-3 sm:grid-cols-2">
+      <div className="p-4 space-y-3">
         {loading ? (
           <><div className="skeleton h-52"/><div className="skeleton h-52"/></>
         ) : posts.map(p => <PostCard key={p.id} post={p}/>)}

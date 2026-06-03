@@ -91,12 +91,12 @@ export default function LoginPage() {
   }
 
   async function handleForgotPw() {
-    if (!email) return setMsg('Bitte E-Mail eingeben fuer Passwort-Reset.')
+    if (!email) return setMsg('Bitte E-Mail eingeben für Passwort-Reset.')
     setLoading(true); setMsg('')
     const { error } = await supabase.auth.resetPasswordForEmail(email)
     setLoading(false)
     if (error) { setErr(true); setMsg(error.message) }
-    else { setErr(false); setMsg('E-Mail zum Zuruecksetzen wurde gesendet.') }
+    else { setErr(false); setMsg('E-Mail zum Zurücksetzen wurde gesendet.') }
   }
 
   const toggle = (n: string) => setRNischen(prev => prev.includes(n) ? prev.filter(x=>x!==n) : [...prev,n])
@@ -180,7 +180,7 @@ export default function LoginPage() {
                 <span className="text-xs text-[#6B6B6B] leading-snug">Ich akzeptiere die <a href="/agb" target="_blank" className="text-[#b8924a] hover:underline">AGB</a> und <a href="/datenschutz" target="_blank" className="text-[#b8924a] hover:underline">Datenschutzbestimmungen</a></span>
               </label>
               <div className="flex gap-2">
-                <button onClick={()=>{setStep(1);setMsg('')}} className="flex-1 py-3.5 rounded-xl border-[1.5px] border-[#E8E0D5] text-[#6B6B6B] text-sm">&larr; Zurueck</button>
+                <button onClick={()=>{setStep(1);setMsg('')}} className="flex-1 py-3.5 rounded-xl border-[1.5px] border-[#E8E0D5] text-[#6B6B6B] text-sm">&larr; Zurück</button>
                 <button onClick={step2} disabled={loading} className="flex-[2] py-3.5 bg-[#b8924a] text-white rounded-xl font-medium disabled:opacity-50 flex items-center justify-center gap-2">
                   {loading && <svg className="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8V0C5.37 0 0 5.37 0 12h4z"/></svg>}
                   {loading?'Erstellen...':'Konto erstellen'}

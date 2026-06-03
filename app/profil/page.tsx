@@ -5,6 +5,7 @@ import AppShell from '@/components/AppShell'
 import { supabase } from '@/lib/supabase'
 
 const NISCHEN = ['laser','gesicht','nagel','pmu','wimpern','haar','med','aesthetik']
+const BEREICHE = ['Kosmetik & Ästhetik','Haare & Friseur','Nails','Lashes & Brows','Massage & Wellness','Permanent Make-up & Microblading','Medizinische Ästhetik','Andere']
 const FARBEN = ['#b8924a','#2D6A4F','#1A1A2E','#C0392B','#6A1B9A','#1565C0','#E65100','#00838F']
 const KANTONE = ['AG','AI','AR','BE','BL','BS','FR','GE','GL','GR','JU','LU','NE','NW','OW','SG','SH','SO','SZ','TG','TI','UR','VD','VS','ZG','ZH']
 
@@ -14,8 +15,9 @@ export default function ProfilPage() {
   const [nischen, setNischen] = useState<string[]>([])
   const [farbe, setFarbe] = useState('#b8924a')
   const [showEdit, setShowEdit] = useState(false)
+  const [showLogout, setShowLogout] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [form, setForm] = useState({name:'',unternehmen:'',berufsbezeichnung:'',kanton:'',mitarbeiter:'',website:'',bio:''})
+  const [form, setForm] = useState({name:'',unternehmen:'',berufsbezeichnung:'',bereich:'',kanton:'',mitarbeiter:'',website:'',bio:''})
 
   useEffect(() => {
     supabase.auth.getSession().then(({data}) => {
@@ -24,7 +26,7 @@ export default function ProfilPage() {
         const u = data.session.user; setUser(u)
         const m = u.user_metadata||{}
         setFarbe(m.avatar_farbe||'#b8924a')
-        setForm({name:m.name||'',unternehmen:m.unternehmen||'',berufsbezeichnung:m.berufsbezeichnung||'',kanton:m.kanton||'',mitarbeiter:m.mitarbeiter||'',website:m.website||'',bio:m.bio||''})
+        setForm({name:m.name||'',unternehmen:m.unternehmen||'',berufsbezeichnung:m.berufsbezeichnung||'',bereich:m.bereich||'',kanton:m.kanton||'',mitarbeiter:m.mitarbeiter||'',website:m.website||'',bio:m.bio||''})
         if (m.nischen) setNischen(Array.isArray(m.nischen)?m.nischen:m.nischen.split(',').filter(Boolean))
       }
     })
@@ -45,7 +47,7 @@ export default function ProfilPage() {
   return (
     <AppShell>
       <div className="bg-white px-4 py-4 flex items-center justify-between border-b border-[#F0EAE0] sticky top-0 z-40">
-        <h1 className="font-serif text-2xl font-bold text-[#1A1A2E]">Profil</h1>
+        <h1 className="font-serif text-2xl font-bold text-[#1A1A2E]">BeautyHub</h1>
         <button onClick={()=>setShowEdit(true)} className="text-sm text-[#b8924a] font-semibold">Bearbeiten</button>
       </div>
 
@@ -61,6 +63,7 @@ export default function ProfilPage() {
         <h2 className="font-serif text-2xl font-bold text-[#1A1A2E]">{name}</h2>
         {form.berufsbezeichnung && <p className="text-sm text-[#b8924a] font-medium mt-1">{form.berufsbezeichnung}</p>}
         {form.unternehmen && <p className="text-sm text-[#6B6B6B] mt-0.5">{form.unternehmen}</p>}
+        {form.bereich && <div className="mt-2"><span className="inline-block px-3.5 py-1 rounded-full text-xs font-semibold bg-[#FFF8F0] text-[#b8924a] border border-[#EBD9B8]">{form.bereich}</span></div>}
         <div className="flex items-center justify-center gap-3 mt-2 text-xs text-[#9A9A9A] flex-wrap">
           {form.kanton && <span>📍 {form.kanton}</span>}
           {form.mitarbeiter && <span>👥 {form.mitarbeiter} Mitarbeitende</span>}
@@ -95,10 +98,23 @@ export default function ProfilPage() {
         </div>
       </div>
 
-      <button onClick={async()=>{await supabase.auth.signOut();router.push('/login')}}
-        className="mx-4 mt-3 mb-6 w-[calc(100%-2rem)] py-3.5 rounded-2xl bg-white border-[1.5px] border-red-200 text-red-500 text-sm font-medium shadow-sm">
+      <button onClick={()=>setShowLogout(true)}
+        className="mx-4 mt-3 mb-6 w-[calc(100%-2rem)] py-3.5 rounded-2xl bg-white border-[1.5px] border-red-200 text-red-500 text-sm font-medium shadow-sm hover:bg-red-50 transition-colors">
         Abmelden
       </button>
+
+      {showLogout && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-5" onClick={e=>{if(e.target===e.currentTarget)setShowLogout(false)}}>
+          <div className="bg-white rounded-2xl w-full max-w-xs p-6 text-center">
+            <h2 className="font-serif text-xl font-bold text-[#1A1A2E] mb-2">Wirklich abmelden?</h2>
+            <p className="text-sm text-[#6B6B6B] mb-6">Du wirst von BeautyHub abgemeldet.</p>
+            <div className="flex gap-2">
+              <button onClick={()=>setShowLogout(false)} className="flex-1 py-3 rounded-xl border-[1.5px] border-[#E8E0D5] text-[#6B6B6B] text-sm font-medium">Abbrechen</button>
+              <button onClick={async()=>{await supabase.auth.signOut();router.push('/login')}} className="flex-1 py-3 rounded-xl bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition-colors">Abmelden</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showEdit && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-end justify-center" onClick={e=>{if(e.target===e.currentTarget)setShowEdit(false)}}>
@@ -109,6 +125,8 @@ export default function ProfilPage() {
               <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">Name</label><input value={form.name} onChange={e=>setForm({...form,name:e.target.value})} className={ic}/></div>
               <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">Berufsbezeichnung</label><input value={form.berufsbezeichnung} onChange={e=>setForm({...form,berufsbezeichnung:e.target.value})} placeholder="z.B. Kosmetikerin" className={ic}/></div>
               <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">Unternehmensname</label><input value={form.unternehmen} onChange={e=>setForm({...form,unternehmen:e.target.value})} placeholder="z.B. Ivory Beauty" className={ic}/></div>
+              <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">Bereich</label>
+                <select value={form.bereich} onChange={e=>setForm({...form,bereich:e.target.value})} className={ic}><option value="">Bereich auswählen...</option>{BEREICHE.map(b=><option key={b} value={b}>{b}</option>)}</select></div>
               <div className="grid grid-cols-2 gap-3">
                 <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">Kanton</label>
                   <select value={form.kanton} onChange={e=>setForm({...form,kanton:e.target.value})} className={ic}><option value="">Kanton</option>{KANTONE.map(k=><option key={k} value={k}>{k}</option>)}</select></div>

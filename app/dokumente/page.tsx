@@ -5,14 +5,14 @@ import AppShell from '@/components/AppShell'
 import { supabase } from '@/lib/supabase'
 
 const DOCS = [
-  { id: '1', titel: 'Hygiene-Checkliste Kosmetikstudio CH', beschreibung: 'Vollstaendige Checkliste fuer taeegliche, woechentliche und monatliche Hygiene. Konform mit Schweizer Gesundheitsvorschriften.', typ: 'checkliste', seiten: 2, downloads: 234 },
-  { id: '2', titel: 'Einwilligungsformular Laser-Behandlung', beschreibung: 'Rechtssicheres Einwilligungsformular nach Schweizer Recht. Aufklaerung ueber Risiken und Nachsorge inklusive.', typ: 'vorlage', seiten: 3, downloads: 189 },
-  { id: '3', titel: 'Einwilligungsformular PMU / Permanent Make-up', beschreibung: 'Vollstaendiges Formular fuer PMU-Behandlungen. REACH-Konformitaet und Nachsorgehinweise inklusive.', typ: 'vorlage', seiten: 4, downloads: 312 },
+  { id: '1', titel: 'Hygiene-Checkliste Kosmetikstudio CH', beschreibung: 'Vollständige Checkliste für tägliche, wöchentliche und monatliche Hygiene. Konform mit Schweizer Gesundheitsvorschriften.', typ: 'checkliste', seiten: 2, downloads: 234 },
+  { id: '2', titel: 'Einwilligungsformular Laser-Behandlung', beschreibung: 'Rechtssicheres Einwilligungsformular nach Schweizer Recht. Aufklärung über Risiken und Nachsorge inklusive.', typ: 'vorlage', seiten: 3, downloads: 189 },
+  { id: '3', titel: 'Einwilligungsformular PMU / Permanent Make-up', beschreibung: 'Vollständiges Formular für PMU-Behandlungen. REACH-Konformität und Nachsorgehinweise inklusive.', typ: 'vorlage', seiten: 4, downloads: 312 },
   { id: '4', titel: 'Kosmetikverordnung Schweiz - Zusammenfassung', beschreibung: 'Kompakte Zusammenfassung der wichtigsten Punkte der Schweizer Kosmetikverordnung. Aktualisiert April 2026.', typ: 'gesetz', seiten: 6, downloads: 456 },
-  { id: '5', titel: 'Laserklassen Uebersicht - Zulassungspflichten CH', beschreibung: 'Infoblatt zu den Laserklassen 1-4 und Zulassungspflichten in der Schweiz.', typ: 'info', seiten: 2, downloads: 178 },
-  { id: '6', titel: 'REACH-konforme Pigmente - Verbotsliste 2026', beschreibung: 'Aktuelle Liste der verbotenen Pigmente fuer PMU und Tattoos. Stand Januar 2026.', typ: 'gesetz', seiten: 3, downloads: 389 },
-  { id: '7', titel: 'Nachsorgeblatt Nageldesign / Gel', beschreibung: 'Professionelles Nachsorgeblatt fuer Gel- und Acrylnaegel. Pflegehinweise und Kontaktinformationen.', typ: 'vorlage', seiten: 1, downloads: 267 },
-  { id: '8', titel: 'Erstgespraech-Bogen Kosmetikberatung', beschreibung: 'Strukturierter Bogen fuer die Kundenberatung. Anamnese, Kontraindikationen und Wunschbehandlung.', typ: 'vorlage', seiten: 2, downloads: 203 },
+  { id: '5', titel: 'Laserklassen Übersicht - Zulassungspflichten CH', beschreibung: 'Infoblatt zu den Laserklassen 1-4 und Zulassungspflichten in der Schweiz.', typ: 'info', seiten: 2, downloads: 178 },
+  { id: '6', titel: 'REACH-konforme Pigmente - Verbotsliste 2026', beschreibung: 'Aktuelle Liste der verbotenen Pigmente für PMU und Tattoos. Stand Januar 2026.', typ: 'gesetz', seiten: 3, downloads: 389 },
+  { id: '7', titel: 'Nachsorgeblatt Nageldesign / Gel', beschreibung: 'Professionelles Nachsorgeblatt für Gel- und Acrylnägel. Pflegehinweise und Kontaktinformationen.', typ: 'vorlage', seiten: 1, downloads: 267 },
+  { id: '8', titel: 'Erstgespräch-Bogen Kosmetikberatung', beschreibung: 'Strukturierter Bogen für die Kundenberatung. Anamnese, Kontraindikationen und Wunschbehandlung.', typ: 'vorlage', seiten: 2, downloads: 203 },
 ]
 const LABELS: Record<string, string> = { checkliste: 'Checkliste', vorlage: 'Vorlage', info: 'Infoblatt', gesetz: 'Gesetz' }
 const BG: Record<string, string> = { checkliste: '#E8F5E9', vorlage: '#E3F2FD', info: '#FFF3E0', gesetz: '#FFEBEE' }
@@ -36,7 +36,7 @@ export default function DokumentePage() {
   return (
     <AppShell>
       <div className="bg-white px-5 py-4 flex items-center justify-between border-b border-[#F0EAE0] sticky top-0 z-40">
-        <h1 className="font-serif text-2xl font-bold text-[#1A1A2E]">Dokumente</h1>
+        <h1 className="font-serif text-2xl font-bold text-[#1A1A2E]">BeautyHub</h1>
         <button onClick={() => router.push('/profil')} className="w-9 h-9 rounded-full bg-[#b8924a] flex items-center justify-center text-white text-sm font-semibold">{av}</button>
       </div>
       <div className="bg-white border-b border-[#F0EAE0] px-4 py-3">
@@ -88,7 +88,7 @@ export default function DokumentePage() {
               <span className="text-xs bg-[#F5EFE8] text-[#6B6B6B] px-3 py-1 rounded-full">{detail.seiten} Seiten</span>
               <span className="text-xs bg-[#F5EFE8] text-[#6B6B6B] px-3 py-1 rounded-full">{detail.downloads}x heruntergeladen</span>
             </div>
-            <button onClick={() => alert('Download folgt in Kuerze!')} className="w-full py-4 bg-[#b8924a] text-white rounded-xl font-medium flex items-center justify-center gap-2 mb-2">
+            <button onClick={() => alert('Download folgt in Kürze!')} className="w-full py-4 bg-[#b8924a] text-white rounded-xl font-medium flex items-center justify-center gap-2 mb-2">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               Herunterladen
             </button>
