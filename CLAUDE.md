@@ -17,11 +17,12 @@ Live-URL: https://www.thebeautyhub.ch
 - Nach jeder Änderung: git add . && git commit -m "..." && git push
 
 ## Offene Aufgaben (Priorität)
-1. Detaillierte Nischen-Liste einfügen (Unterkategorien pro Bereich)
-2. Formular-Validierung mit deutschen Fehlermeldungen
-3. Passwort-Toggle (Auge-Symbol) hinzufügen
-4. AGB/Datenschutz Checkbox (DSG Schweiz) – Pflichtfeld
-5. E-Mail Bestätigung in Supabase aktivieren
-6. Landing Page erstellen (öffentlich zugänglich)
-7. Ladeindikator beim Absenden
-8. Profilbild Upload
+- [x] 1. Detaillierte Nischen-Liste einfügen (Unterkategorien pro Bereich)
+- [x] 2. Formular-Validierung mit deutschen Fehlermeldungen
+- [x] 3. Passwort-Toggle (Auge-Symbol) hinzufügen
+- [~] 4. AGB/Datenschutz Checkbox (DSG Schweiz) – Pflichtfeld
+      (Checkbox + Pflichtprüfung erledigt; Seiten /agb und /datenschutz fehlen noch)
+- [ ] 5. E-Mail Bestätigung in Supabase aktivieren
+- [ ] 6. Landing Page erstellen (öffentlich zugänglich)
+- [x] 7. Ladeindikator beim Absenden
+- [ ] 8. Profilbild Upload

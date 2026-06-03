@@ -34,8 +34,11 @@ export default function LoginPage() {
   const [rMitarbeiter, setRMitarbeiter] = useState('')
   const [rKanton, setRKanton] = useState('')
   const [rNischen, setRNischen] = useState<string[]>([])
+  const [showRPw, setShowRPw] = useState(false)
+  const [rAgb, setRAgb] = useState(false)
 
   const ic = 'w-full px-4 py-3.5 rounded-xl border-[1.5px] border-[#E8E0D5] bg-[#faf8f5] text-[#1A1A2E] text-sm outline-none focus:border-[#b8924a] focus:bg-white transition-colors'
+  const isValidEmail = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)
 
   async function handleLogin() {
     if (!email || !pw) return setMsg('Bitte alle Felder ausfullen.')
@@ -47,8 +50,11 @@ export default function LoginPage() {
   }
 
   async function step2() {
-    if (!rVorname || !rNachname || !rBereich || rNischen.length === 0) return setMsg('Bitte Vorname, Nachname, Bereich und mind. eine Nische waehlen.')
-    setLoading(true); setMsg('')
+    if (!rVorname || !rNachname) { setErr(true); return setMsg('Dieses Feld ist erforderlich') }
+    if (!rBereich) { setErr(true); return setMsg('Bitte einen Bereich auswählen') }
+    if (rNischen.length === 0) { setErr(true); return setMsg('Bitte mindestens eine Nische auswählen') }
+    if (!rAgb) { setErr(true); return setMsg('Bitte AGB und Datenschutzbestimmungen akzeptieren') }
+    setLoading(true); setErr(false); setMsg('')
     const { error } = await supabase.auth.signUp({ email: rEmail, password: rPw, options: { data: { name: rName, vorname: rVorname, nachname: rNachname, bereich: rBereich, unternehmen: rUnternehmen, kanton: rKanton, mitarbeiter: parseInt(rMitarbeiter)||1, nischen: rNischen } } })
     setLoading(false)
     if (error) { setErr(true); setMsg(error.message) }
@@ -105,8 +111,17 @@ export default function LoginPage() {
               <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">E-Mail</label>
                 <input type="email" value={rEmail} onChange={e=>setREmail(e.target.value)} placeholder="deine@email.com" className={ic}/></div>
               <div><label className="block text-[11px] font-medium text-[#6B6B6B] uppercase tracking-wider mb-1.5">Passwort (min. 8 Zeichen)</label>
-                <input type="password" value={rPw} onChange={e=>setRPw(e.target.value)} placeholder="••••••••" className={ic}/></div>
-              <button onClick={() => { if(!rName||!rEmail||!rPw) return setMsg('Alle Felder ausfullen.'); if(rPw.length<8) return setMsg('Passwort min. 8 Zeichen.'); setMsg(''); setStep(2) }} className="w-full py-4 bg-[#b8924a] text-white rounded-xl font-medium">Weiter &rarr;</button>
+                <div className="relative">
+                  <input type={showRPw ? 'text' : 'password'} value={rPw} onChange={e=>setRPw(e.target.value)} placeholder="••••••••" className={ic + ' pr-12'}/>
+                  <button type="button" onClick={()=>setShowRPw(s=>!s)} aria-label={showRPw ? 'Passwort verbergen' : 'Passwort anzeigen'} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9A9A9A] hover:text-[#6B6B6B]">
+                    {showRPw ? (
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                    ) : (
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    )}
+                  </button>
+                </div></div>
+              <button onClick={() => { if(!rName||!rEmail||!rPw){setErr(true);return setMsg('Dieses Feld ist erforderlich')} if(!isValidEmail(rEmail)){setErr(true);return setMsg('Bitte eine gültige E-Mail-Adresse eingeben')} if(rPw.length<8){setErr(true);return setMsg('Passwort muss mindestens 8 Zeichen haben')} setErr(false); setMsg(''); setStep(2) }} className="w-full py-4 bg-[#b8924a] text-white rounded-xl font-medium">Weiter &rarr;</button>
             </div>
           )}
           {tab === 'register' && step === 2 && (
@@ -136,9 +151,16 @@ export default function LoginPage() {
                       <button key={n} onClick={()=>toggle(n)} className={`px-3 py-1.5 rounded-full text-xs font-medium border-[1.5px] transition-colors ${rNischen.includes(n)?'bg-[#b8924a] text-white border-[#b8924a]':'bg-white text-[#6B6B6B] border-[#E8E0D5] hover:border-[#b8924a]'}`}>{n}</button>))}</div>
                   </div>))}</div>
               </div>
+              <label className="flex items-start gap-2.5 cursor-pointer">
+                <input type="checkbox" checked={rAgb} onChange={e=>setRAgb(e.target.checked)} className="mt-0.5 w-4 h-4 accent-[#b8924a] shrink-0"/>
+                <span className="text-xs text-[#6B6B6B] leading-snug">Ich akzeptiere die <a href="/agb" target="_blank" className="text-[#b8924a] hover:underline">AGB</a> und <a href="/datenschutz" target="_blank" className="text-[#b8924a] hover:underline">Datenschutzbestimmungen</a></span>
+              </label>
               <div className="flex gap-2">
                 <button onClick={()=>{setStep(1);setMsg('')}} className="flex-1 py-3.5 rounded-xl border-[1.5px] border-[#E8E0D5] text-[#6B6B6B] text-sm">&larr; Zurueck</button>
-                <button onClick={step2} disabled={loading} className="flex-[2] py-3.5 bg-[#b8924a] text-white rounded-xl font-medium disabled:opacity-50">{loading?'Erstellen...':'Konto erstellen'}</button>
+                <button onClick={step2} disabled={loading} className="flex-[2] py-3.5 bg-[#b8924a] text-white rounded-xl font-medium disabled:opacity-50 flex items-center justify-center gap-2">
+                  {loading && <svg className="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8V0C5.37 0 0 5.37 0 12h4z"/></svg>}
+                  {loading?'Erstellen...':'Konto erstellen'}
+                </button>
               </div>
             </div>
           )}
