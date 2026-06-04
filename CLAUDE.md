@@ -132,3 +132,20 @@ Agent/Cron arbeitet via service_role (umgeht RLS).
   Admin (nur Admin) rollenabhängig.
 - Beispieldaten geseedet: 3 ausstehende Agent-Posts + 4 Scan-Logs (zum Testen der UI).
 - Hinweis: Michael ist Admin (kein Tester) → sieht via RLS alle ausstehenden Posts in /freigaben.
+
+## Agent (Ordner agent/, Node CommonJS, läuft auf Mac mini via Cron)
+Eigenständiger Scan-/Monitoring-Agent. Nutzt globales fetch (Node 18+), kein node-fetch-Import.
+Setup/Keys/Cron: siehe agent/README.md. Konfiguration in agent/.env (NIE committen; .env.example als Vorlage).
+- **scan.js** (täglich 07:00): lädt aktive+genehmigte quellen → RSS (rss-parser) bevorzugt, sonst Scrape (cheerio)
+  → Filter: 7 Tage, url_hash-Duplikat, Keyword-Vorfilter (DE/FR/IT/EN), Titel-Ähnlichkeit (Jaccard ≥0.8 skip)
+  → Claude (claude-haiku-4-5, System-Prompt mit Prompt-Caching, robustes extractJSON) max 10 Calls/Scan
+  → Score ≥7 → Pexels-Bild (mit Nischen-Fallbacks, null bei Misserfolg) → insert posts status='ausstehend',
+  agent_erstellt=true. Pro Quelle scan_logs-Eintrag, fehler_count reset/erhöht. Budget-Stopp bei $1/Lauf.
+  Danach Healthchecks-Ping + Telegram-Scan-Bericht. Flags: --dry-run (→agent/dry-run-results.json), --test (1 Artikel/Quelle).
+- **monitor.js** (stündlich): kein Scan heute nach 08:00 → Alarm; quellen.fehler_count≥3 → Alarm; posts>48h ausstehend → Eskalation. Sonst still.
+- **reminder.js** (täglich 11:00): ausstehende Posts >24h → Tester (nach Nischen-Match) erinnern + freigabe_reminder anlegen; >48h ohne 2. Reminder → Eskalation an Admin.
+- **telegram-webhook.js** (Dauerprozess, Port 3001, Node http): Tester-Antworten JA/✅→publiziert, NEIN/❌→abgelehnt, ÄNDERN <txt>→in_bearbeitung; sonst Hilfe. Autorisierung via TELEGRAM_CHAT_ID.
+- **telegram.js**: Klasse mit sendScanBericht/sendFehlerAlarm/sendTesterReminder/sendEskalation/sendTagesbudgetWarnung/sendHeartbeat (schlägt nie hart fehl).
+- **config.js**: Budget/Limits/Timeouts. **healthchecks.io**: Period 1d/Grace 1h → Alarm wenn 25h kein Ping.
+- WICHTIG: Agent braucht service_role-Key (SUPABASE_AGENT_KEY) um RLS zu umgehen (ausstehende Posts anlegen, tester_rollen lesen). Nur server-seitig, nie im Frontend.
+- Claude-typ GESETZ/NEWS/TREND/KI → posts.typ (gesetz/news/trend/news); Nischen-Labels → Keys (lib/nischen-Vokabular).
