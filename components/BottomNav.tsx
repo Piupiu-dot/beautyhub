@@ -28,12 +28,13 @@ const NAV = [
 export default function BottomNav() {
   const path = usePathname()
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-[#F0EAE0] flex pb-safe">
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-[#f0ece6] flex pb-safe">
       {NAV.map(item => {
         const active = path.startsWith(item.href)
         return (
           <Link key={item.href} href={item.href}
-            className={`flex-1 flex flex-col items-center justify-center py-2 gap-0.5 transition-all ${active ? 'text-[#b8924a]' : 'text-[#9A9A9A]'}`}>
+            className={`relative flex-1 flex flex-col items-center justify-center h-[60px] gap-0.5 transition-all ${active ? 'text-[#b8924a]' : 'text-[#9A9A9A]'}`}>
+            {active && <span className="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-[2px] rounded-full bg-[#b8924a]" />}
             {item.icon}
             <span className="text-[10px] font-medium">{item.label}</span>
           </Link>

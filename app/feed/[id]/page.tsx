@@ -93,7 +93,7 @@ export default function DetailPage() {
 
   return (
     <AppShell>
-      <div className="bg-white px-4 py-3.5 flex items-center gap-3 border-b border-[#F0EAE0] sticky top-0 z-40">
+      <div className="bg-white px-4 py-3.5 flex items-center gap-3 border-b border-[#f0ece6] sticky top-0 z-40">
         <button onClick={() => router.back()} className="flex items-center gap-1.5 text-[#b8924a] text-sm font-semibold flex-shrink-0">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><polyline points="15 18 9 12 15 6"/></svg>
           Zurück
@@ -107,34 +107,34 @@ export default function DetailPage() {
         <div className="p-5">
           <div className="flex flex-wrap gap-2 mb-3">
             <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold uppercase ${badgeCls}`}>{badgeLabel}</span>
-            {nische && <span className="text-[11px] text-[#b8924a] font-medium bg-[#FFF8F0] px-2.5 py-1 rounded-full">{nische}</span>}
+            {nische && <span className="text-[11px] text-[#b8924a] font-medium bg-[#fdf6ec] px-2.5 py-1 rounded-full">{nische}</span>}
             {post.ist_agent && <span className="text-[11px] text-[#1565C0] bg-[#E3F2FD] px-2.5 py-1 rounded-full">KI</span>}
           </div>
           <h1 className="font-serif text-2xl font-bold text-[#1A1A2E] leading-tight mb-3">{post.titel}</h1>
-          <div className="flex items-center justify-between pb-4 border-b border-[#F0EAE0] mb-4">
+          <div className="flex items-center justify-between pb-4 border-b border-[#f0ece6] mb-4">
             <span className="text-xs text-[#9A9A9A]">{post.quelle_name || 'BeautyHub'}</span>
             {post.erstellt_am && <span className="text-xs text-[#C0B0A0]">{new Date(post.erstellt_am).toLocaleDateString('de-CH')}</span>}
           </div>
           <div className="text-base text-[#3A3A3A] leading-relaxed space-y-3 mb-5">
             {(post.inhalt || post.zusammenfassung || '').split('\n').filter(Boolean).map((p: string, i: number) => <p key={i}>{p}</p>)}
           </div>
-          <div className="flex items-center gap-3 py-4 border-t border-[#F0EAE0]">
+          <div className="flex items-center gap-3 py-4 border-t border-[#f0ece6]">
             <button onClick={() => { setLiked(!liked); setLikeCount(c => c + (liked ? -1 : 1)) }}
-              className={`flex items-center gap-1.5 text-sm px-3 py-2 rounded-xl ${liked ? 'text-[#b8924a] bg-[#FFF8F0]' : 'text-[#6B6B6B]'}`}>
+              className={`flex items-center gap-1.5 text-sm px-3 py-2 rounded-xl ${liked ? 'text-[#b8924a] bg-[#fdf6ec]' : 'text-[#6B6B6B]'}`}>
               <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" fill={liked ? 'currentColor' : 'none'} strokeWidth={1.8}>
                 <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
               </svg>
               {likeCount}
             </button>
             <span className="text-sm text-[#6B6B6B] px-3 py-2">{kommentare.length} Kommentare</span>
-            {post.quelle_url && <a href={post.quelle_url} target="_blank" rel="noopener noreferrer" className="ml-auto text-sm text-[#b8924a] font-semibold bg-[#FFF8F0] px-3 py-2 rounded-xl border border-[#F0E0C0]">Quelle</a>}
+            {post.quelle_url && <a href={post.quelle_url} target="_blank" rel="noopener noreferrer" className="ml-auto text-sm text-[#b8924a] font-semibold bg-[#fdf6ec] px-3 py-2 rounded-xl border border-[#F0E0C0]">Quelle</a>}
           </div>
         </div>
       </div>
       <div className="px-4 pb-6">
         <div className="flex items-center justify-between py-4">
           <h2 className="font-serif text-xl font-bold text-[#1A1A2E]">Diskussion</h2>
-          <span className="bg-[#F0EAE0] text-[#b8924a] text-xs font-bold px-2.5 py-1 rounded-full">{kommentare.length}</span>
+          <span className="bg-[#f0ece6] text-[#b8924a] text-xs font-bold px-2.5 py-1 rounded-full">{kommentare.length}</span>
         </div>
         {user ? (
           <div className="bg-white rounded-2xl p-4 shadow-sm mb-4">

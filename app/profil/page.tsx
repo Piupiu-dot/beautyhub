@@ -46,14 +46,14 @@ export default function ProfilPage() {
 
   return (
     <AppShell>
-      <div className="bg-white px-4 py-4 flex items-center justify-between border-b border-[#F0EAE0] sticky top-0 z-40">
+      <div className="bg-white px-4 py-4 flex items-center justify-between border-b border-[#f0ece6] sticky top-0 z-40">
         <h1 className="font-serif text-2xl font-bold text-[#1A1A2E]">BeautyHub</h1>
         <button onClick={()=>setShowEdit(true)} className="text-sm text-[#b8924a] font-semibold">Bearbeiten</button>
       </div>
 
-      <div className="bg-white pb-6 border-b border-[#F0EAE0] text-center px-5 pt-8">
+      <div className="bg-[#fdf6ec] pb-6 border-b border-[#f0ece6] text-center px-5 pt-8">
         <div className="relative inline-block mb-4">
-          <div className="w-20 h-20 rounded-full flex items-center justify-center font-serif text-3xl font-bold text-white" style={{background:farbe}}>
+          <div className="w-[72px] h-[72px] rounded-full flex items-center justify-center font-serif text-3xl font-bold text-white" style={{background:farbe}}>
             {name[0]?.toUpperCase()}
           </div>
           <button onClick={()=>setShowEdit(true)} className="absolute bottom-0 right-0 w-7 h-7 bg-[#b8924a] rounded-full flex items-center justify-center border-2 border-white">
@@ -64,7 +64,7 @@ export default function ProfilPage() {
         {form.berufsbezeichnung && <p className="text-sm text-[#b8924a] font-medium mt-1">{form.berufsbezeichnung}</p>}
         {form.unternehmen && <p className="text-sm text-[#6B6B6B] mt-0.5">{form.unternehmen}</p>}
         <div className="flex items-center justify-center gap-2 mt-3 flex-wrap">
-          {form.bereich && <span className="px-3.5 py-1 rounded-full text-xs font-semibold bg-[#FFF8F0] text-[#b8924a] border border-[#EBD9B8]">{form.bereich}</span>}
+          {form.bereich && <span className="px-3.5 py-1 rounded-full text-xs font-semibold bg-[#fdf6ec] text-[#b8924a] border border-[#EBD9B8]">{form.bereich}</span>}
           {form.kanton && <span className="px-3.5 py-1 rounded-full text-xs font-medium bg-[#F0EBE4] text-[#6B6B6B]">📍 {form.kanton}</span>}
         </div>
         {form.mitarbeiter && <p className="text-xs text-[#9A9A9A] mt-2">👥 {form.mitarbeiter} Mitarbeitende</p>}
@@ -75,7 +75,7 @@ export default function ProfilPage() {
       {nischen.length > 0 && (
         <div className="mx-4 mt-4 bg-white rounded-2xl shadow-sm overflow-hidden">
           <div className="px-4 py-3 border-b border-[#F5F0EA]"><p className="text-xs font-semibold text-[#9A9A9A] uppercase tracking-widest">Meine Nischen</p></div>
-          <div className="p-4 flex flex-wrap gap-2">{nischen.map(n=><span key={n} className="px-3.5 py-2 rounded-full text-xs font-medium bg-[#f5f0eb] text-[#8a6d35] border border-[#EBD9B8]">{n}</span>)}</div>
+          <div className="p-4 flex flex-wrap gap-2">{nischen.slice(0,5).map(n=><span key={n} className="px-3.5 py-2 rounded-full text-xs font-medium bg-[#fdf6ec] text-[#8a6d35] border border-[#EBD9B8]">{n}</span>)}{nischen.length>5 && <span className="px-3.5 py-2 text-xs text-[#6b7280]">+{nischen.length-5}</span>}</div>
         </div>
       )}
 

@@ -70,7 +70,7 @@ export default function FeedPage() {
 
   return (
     <AppShell>
-      <div className="bg-white px-4 py-4 flex items-center justify-between border-b border-[#F0EAE0] sticky top-0 z-40">
+      <div className="bg-white px-4 py-4 flex items-center justify-between border-b border-[#f0ece6] sticky top-0 z-40">
         <h1 className="font-serif text-2xl font-bold text-[#1A1A2E]">BeautyHub</h1>
         <div className="flex items-center gap-2">
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Beiträge durchsuchen..." className={`hidden md:block w-64 ${searchInput}`} />
@@ -82,13 +82,13 @@ export default function FeedPage() {
       </div>
 
       {showSearch && (
-        <div className="md:hidden bg-white px-4 py-3 border-b border-[#F0EAE0]">
+        <div className="md:hidden bg-white px-4 py-3 border-b border-[#f0ece6]">
           <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Beiträge durchsuchen..." className={searchInput} />
         </div>
       )}
 
       {/* Mobile-Filter: Content-Typ Tabs */}
-      <div className="md:hidden bg-white border-b border-[#F0EAE0] px-4 flex gap-5 overflow-x-auto no-scrollbar">
+      <div className="md:hidden bg-white border-b border-[#f0ece6] px-4 flex gap-5 overflow-x-auto no-scrollbar">
         {TYPEN.map(t => (
           <button key={t.key} onClick={() => setTyp(t.key)}
             className={`py-3 text-sm font-medium border-b-2 whitespace-nowrap transition-all ${typ === t.key ? 'text-[#b8924a] border-[#b8924a]' : 'text-[#9A9A9A] border-transparent'}`}>
@@ -97,7 +97,7 @@ export default function FeedPage() {
         ))}
       </div>
       {/* Mobile-Filter: Nischen-Pills */}
-      <div className="md:hidden bg-white border-b border-[#F0EAE0] px-4 py-3 overflow-x-auto no-scrollbar">
+      <div className="md:hidden bg-white border-b border-[#f0ece6] px-4 py-3 overflow-x-auto no-scrollbar">
         <div className="flex gap-2 whitespace-nowrap">
           {NISCHEN.map(n => <button key={n.key} onClick={() => setNische(n.key)} className={pill(nische === n.key)}>{n.label}</button>)}
         </div>
@@ -105,7 +105,7 @@ export default function FeedPage() {
 
       <div className="md:flex md:items-start">
         {/* Desktop-Filter-Rail */}
-        <aside className="hidden md:block w-56 shrink-0 border-r border-[#e8e0d5] p-4 sticky top-[73px]">
+        <aside className="hidden md:block w-56 shrink-0 border-r border-[#f0ece6] p-4 sticky top-[73px]">
           <p className="text-[10px] font-bold text-[#9A9A9A] uppercase tracking-widest mb-2 px-3">Inhalt</p>
           <div className="space-y-1 mb-6">
             {TYPEN.map(t => <button key={t.key} onClick={() => setTyp(t.key)} className={railBtn(typ === t.key)}>{t.label}</button>)}

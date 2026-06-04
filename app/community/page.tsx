@@ -59,14 +59,14 @@ export default function CommunityPage() {
 
   return (
     <AppShell>
-      <div className="bg-white px-5 py-4 flex items-center justify-between border-b border-[#F0EAE0] sticky top-0 z-40">
+      <div className="bg-white px-5 py-4 flex items-center justify-between border-b border-[#f0ece6] sticky top-0 z-40">
         <h1 className="font-serif text-2xl font-bold text-[#1A1A2E]">BeautyHub</h1>
         <button onClick={() => router.push('/profil')} className="w-9 h-9 rounded-full bg-[#b8924a] flex items-center justify-center text-white text-sm font-semibold">{av}</button>
       </div>
 
-      <div className="m-4 bg-white rounded-2xl p-4 shadow-sm flex items-center gap-3">
+      <div className="card m-4 p-4 flex items-center gap-3">
         <div className="w-10 h-10 rounded-full bg-[#b8924a] flex items-center justify-center text-white font-semibold">{av}</div>
-        <div onClick={() => setModal(true)} className="flex-1 bg-[#faf8f5] border-[1.5px] border-[#E8E0D5] rounded-xl px-4 py-3 text-sm text-[#9A9A9A] cursor-pointer">Frage stellen oder Erfahrung teilen...</div>
+        <div onClick={() => setModal(true)} className="flex-1 bg-[#faf8f5] border border-[#f0ece6] rounded-xl px-4 py-3 text-sm text-[#6b7280] cursor-pointer">Frage stellen oder Erfahrung teilen...</div>
         <button onClick={() => setModal(true)} className="bg-[#b8924a] text-white text-sm font-medium px-4 py-2.5 rounded-xl flex-shrink-0">Posten</button>
       </div>
 
@@ -79,7 +79,7 @@ export default function CommunityPage() {
 
       <div className="md:flex md:items-start">
         {/* Desktop-Filter-Rail */}
-        <aside className="hidden md:block w-56 shrink-0 border-r border-[#e8e0d5] p-4 sticky top-[73px]">
+        <aside className="hidden md:block w-56 shrink-0 border-r border-[#f0ece6] p-4 sticky top-[73px]">
           <p className="text-[10px] font-bold text-[#9A9A9A] uppercase tracking-widest mb-2 px-3">Nische</p>
           <div className="space-y-1">
             {NISCHEN.map(x => <button key={x.key} onClick={() => setNische(x.key)} className={railBtn(nische === x.key)}>{x.label}</button>)}
@@ -95,19 +95,19 @@ export default function CommunityPage() {
               <button onClick={() => setNische('alle')} className="mt-3 text-[#b8924a] font-semibold text-sm hover:underline">Filter zurücksetzen</button>
             </div>
           ) : filtered.map(p => (
-            <Link key={p.id} href={`/feed/${p.id}`} className="block bg-white rounded-2xl p-5 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all cursor-pointer">
+            <Link key={p.id} href={`/feed/${p.id}`} className="card block p-5 hover:-translate-y-0.5 hover:shadow-md transition-all cursor-pointer">
               <div className="flex items-center gap-2.5 mb-3">
-                <div className="w-9 h-9 rounded-full bg-[#E8DDD0] flex items-center justify-center text-[#b8924a] font-bold text-sm">{(p.autor_name || '?')[0].toUpperCase()}</div>
+                <div className="w-10 h-10 rounded-full bg-[#E8DDD0] flex items-center justify-center text-[#b8924a] font-bold text-sm">{(p.autor_name || '?')[0].toUpperCase()}</div>
                 <div>
-                  <p className="text-sm font-semibold text-[#1A1A2E]">{p.autor_name || 'Anonym'}</p>
-                  <p className="text-xs text-[#9A9A9A]">{p.erstellt_am ? formatDatum(p.erstellt_am) : ''}</p>
+                  <p className="text-sm font-semibold text-[#1a1a1a]">{p.autor_name || 'Anonym'}</p>
+                  <p className="text-xs text-[#6b7280]">{p.erstellt_am ? formatDatum(p.erstellt_am) : ''}</p>
                 </div>
               </div>
-              <h3 className="font-serif text-lg font-semibold text-[#1A1A2E] leading-snug mb-2">{p.titel}</h3>
-              <p className="text-sm text-[#5A5A5A] leading-relaxed line-clamp-3">{p.inhalt}</p>
-              <div className="flex items-center gap-4 mt-3 pt-3 border-t border-[#F5F0EA]">
-                <span className="text-xs text-[#9A9A9A]">♥ {p.likes || 0}</span>
-                <span className="text-xs text-[#9A9A9A]">💬 {p.kommentare_count || 0}</span>
+              <h3 className="text-base font-semibold text-[#1a1a1a] leading-snug mb-2">{p.titel}</h3>
+              <p className="text-sm text-[#6b7280] leading-relaxed line-clamp-3">{p.inhalt}</p>
+              <div className="flex items-center gap-4 mt-3 pt-3 border-t border-[#f0ece6]">
+                <span className="text-xs text-[#6b7280]">♥ {p.likes || 0}</span>
+                <span className="text-xs text-[#6b7280]">💬 {p.kommentare_count || 0}</span>
                 <span className="ml-auto text-xs text-[#b8924a] font-semibold">Lesen →</span>
               </div>
             </Link>

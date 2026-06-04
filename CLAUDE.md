@@ -13,11 +13,18 @@ Live-URL: https://www.thebeautyhub.ch
 ## Konventionen
 - Sprache UI: Deutsch (Schweizer Hochdeutsch – KEIN ß! Immer "ss": weiss, Schliessen, grösste, Strasse)
 - Auth: Supabase Email/Passwort (kein Google/Apple – B2B)
-- Farbschema: Cremeton (#faf8f5), Gold (#b8924a), Dunkelblau (#1A1A2E)
 - Header auf allen App-Seiten: "BeautyHub" als Logo oben links
-- Feed/Community 1-spaltig (volle Breite), Marktplatz 2-spaltig (md: 3-spaltig)
+- Feed/Community 1-spaltig (volle Breite), Marktplatz 2-spaltig (lg: 3-spaltig)
 - Filter-/Kategorie-Keys (z.B. laser, geraete, mobel) sind INTERNE Filterwerte → nicht umbenennen, nur Label-Maps für die Anzeige
 - Nach jeder Änderung: git add . && git commit -m "..." && git push
+
+## Design-Tokens (Stand Redesign)
+- Hintergrund: #faf8f5 (warm off-white) · Karten: .card-Klasse (globals.css) = #fff, 1px #f0ece6, radius 12px, shadow 0 1px 3px rgba(0,0,0,.06)
+- Gold (Primär) #b8924a · Dunkelblau #1c2b4a · Text primär #1a1a1a · Text sekundär #6b7280 · Trennlinien #f0ece6 · Aktiv-Creme #fdf6ec
+- Typ-Badges als weiche Pills: Gesetz #fdf6ec/#b8924a · News #f0f4ff/#1c2b4a · Trend #f0faf5/#2d6a4f · KI #f5f0fa/#6b4c8b
+- Marktplatz-Zustand: NEU #dcfce7/#166534, GEBRAUCHT #f0ece6/#6b7280
+- Schrift: Jost (Body) + Cormorant Garamond (.font-serif) – beibehalten
+- Neue Surface? → `.card`-Klasse verwenden statt bg-white/rounded-2xl/shadow-sm
 
 ## Offene Aufgaben (Priorität)
 - [x] 1. Detaillierte Nischen-Liste einfügen (Unterkategorien pro Bereich)
@@ -39,25 +46,24 @@ Live-URL: https://www.thebeautyhub.ch
 - Schritt 2 "Dein Profil": Vorname/Nachname, Unternehmensname (Pflicht), Kanton, Mitarbeitende, Bereich (Dropdown), Nischen (Pills)
 - Offen: Seiten /agb und /datenschutz existieren noch nicht (Checkbox-Links → 404)
 
-## Branding-Farben (Typ-Codes)
-- Gold #b8924a (Gesetz) · Dunkelgrün #2d6a4f (Trend) · Dunkelblau #1c2b4a (News) · gedämpftes Lila #6b4c8b (KI)
-- Aktiv-Hintergrund Nav/Filter: #fdf6ec · Sidebar-Trennlinie: #e8e0d5 · Creme-Flächen: #f5f0eb
-
 ## App-UI – aktueller Stand
-- Feed-Karten (components/PostCard.tsx): KEIN Banner/Gradient mehr. Kompakte Karte mit kleinem
-  farbigem Typ-Badge oben links (Branding-Farben oben), Publikationsdatum oben rechts (lib/demo.ts formatDatum:
-  "vor 2 Tagen" / "12. Mai 2026"). Titel & Text prominent.
-- Detailseite feed/[id]: solider Branding-Farb-Hero (kein Gradient) + Titel, Inhalt, Quelle, Datum, Tags.
+- Sidebar (components/Sidebar.tsx, lg+): 220px, Trennlinie #f0ece6, Logo "BeautyHub" (#1c2b4a) + "SCHWEIZ" gold.
+  Nav-Items 44px, aktiv = #fdf6ec + Gold + linke 3px-Goldlinie. Unten Profil-Widget (Avatar + Name + Abmelden mit Dialog).
+- BottomNav (components/BottomNav.tsx, <lg): 60px, obere Trennlinie #f0ece6, aktiver Tab = Gold + 2px-Goldlinie oben.
+- Feed-Karten (components/PostCard.tsx): KEIN Banner. .card-Stil, weiche Typ-Pill + Datum oben, Titel 18px,
+  Beschreibung 2 Zeilen grau, Quelle (gold) + Herz unten. Datum via lib/demo.ts formatDatum ("vor 2 Tagen" / "12. Mai 2026").
+- Detailseite feed/[id]: solider Branding-Farb-Hero + Titel, Inhalt, Quelle, Datum, Tags.
 - Demo-Daten zentral in lib/demo.ts (DEMO_POSTS, DEMO_COMMUNITY, findDemoPost). Feed/Community/Detail teilen sie.
   WICHTIG: Detailseite fällt auf findDemoPost(id) zurück, wenn die DB-Query (UUID-Spalte) für Demo-IDs wie '1'/'c1'
   nichts liefert → behebt den "Beitrag nicht gefunden"-Bug.
 - Filter (Feed): 2 Ebenen, kombinierbar + clientseitig (useMemo). Ebene 1 Content-Typ (Alle/Gesetze/News/Trends/KI,
-  KI=ist_agent), Ebene 2 Nischen-Pills. Mobile: Tabs mit goldenem Unterstrich + scrollbare Pills.
+  KI=ist_agent) als Tabs mit goldenem Unterstrich, Ebene 2 Nischen-Pills (gold ausgefüllt = aktiv).
   Desktop (md+): vertikale Filter-Rail (INHALT/NISCHE), horizontale Leisten ausgeblendet. Suche über Titel+Inhalt
   (Desktop inline, Mobile ausklappbar). Leerzustand: "Keine Beiträge für diese Auswahl gefunden." + "Filter zurücksetzen".
-- Filter (Community): nur Nischen-Ebene (alle Beiträge sind typ=community) + Desktop-Rail + Leerzustand.
-- Marktplatz-Platzhalter: cremefarben (#f5f0eb), Kategorie-Text gold zentriert, keine Icons.
-- Profil: Bereich (goldenes Badge) + Kanton (graues Badge) nebeneinander, Nischen als cremefarbene Pills,
-  Abmelden mit Bestätigungsdialog ("Wirklich abmelden?"). "App installieren"-Box Hintergrund #1c2b4a.
-- Sidebar: Trennlinie #e8e0d5, grösseres Logo, mehr Abstand, aktiver Eintrag #fdf6ec/Gold.
-- Dokumente: Intro-Platzhalter (cremefarben, goldener Titel "Dokumente & Gesetzestexte") über der Demo-Liste.
+- Filter (Community): nur Nischen-Ebene (alle Beiträge sind typ=community) + Desktop-Rail + Leerzustand. Karten im .card-Stil.
+- Marktplatz: 2-spaltig, lg: 3-spaltig. Platzhalter #faf8f5 + Kategorie-Text gold zentriert. Preis gold 16px semibold.
+  NEU-Badge grün (#dcfce7/#166534), GEBRAUCHT grau (#f0ece6/#6b7280).
+- Profil: Header-Bereich cremefarben #fdf6ec, Avatar 72px, Bereich (goldenes Badge) + Kanton (graues Badge),
+  Nischen als cremefarbene Pills (max 5 + "+n"), Abmelden-Dialog. "App installieren"-Box #1c2b4a.
+- Dokumente: elegante Platzhalter-Seite (cremefarbener Block, Titel "Dokumente & Gesetzestexte" in #1c2b4a,
+  Untertitel, "In Kürze verfügbar"-Badge). Frühere Demo-Liste entfernt.
