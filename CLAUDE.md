@@ -99,7 +99,9 @@ Bestehende Tabellen: users, profiles, posts, kommentare, inserate, dokumente, di
 
 ### RLS (alle Tabellen aktiv)
 Helper: `is_admin()`, `is_tester()`, `tester_sieht_nische(post_nischen text)` (SECURITY DEFINER; EXECUTE nur authenticated+service_role).
-- **posts**: publizierte für alle lesbar; Autor sieht eigene; Tester sehen ausstehende ihrer Nischen;
+Admin-RPCs (SECURITY DEFINER, self-guarded mit is_admin): `admin_stats()` → json{users,tester,ausstehend,scans_heute},
+  `admin_list_tester()` → Tester+Email, `admin_add_tester(p_email,p_nischen)` → legt Tester per E-Mail-Lookup an.
+- **posts**: publizierte für alle lesbar; Autor sieht eigene; Tester sehen ALLE Status ihrer Nischen (für Freigabe-Tabs);
   Admin alles; authenticated insert eigene (autor_id=auth.uid()); Tester update ausstehende ihrer Nische.
 - **quellen**: authenticated sehen genehmigte (+ eigene Vorschläge); Tester können vorschlagen (genehmigt=false, eigene);
   nur Admin genehmigt/verwaltet.
@@ -112,3 +114,21 @@ Agent/Cron arbeitet via service_role (umgeht RLS).
 ### Offene Sicherheits-Hinweise (Supabase Advisor)
 - "Leaked Password Protection" in Auth aktivieren (HaveIBeenPwned) – Auth-Setting, nicht via SQL.
 - Vorbestehende Tabellen users/user_nischen/dokumente/direktnachrichten haben RLS aktiv, aber keine Policies (nicht Teil dieses Tasks).
+
+## Tester-/Admin-UI (Agent-Freigabe-Workflow)
+- Rollen-Erkennung: `lib/roles.ts` Hook `useRole()` → {isAdmin,isTester,loading} via RPCs is_admin/is_tester
+  (tester_rollen ist per RLS nur für Admins lesbar, daher RPC statt Direktabfrage).
+- Kanonische Nischen-Keys: `lib/nischen.ts` (laser, gesicht, nagel, pmu, wimpern, haar, med) + nischeLabel().
+  WICHTIG: posts.nischen UND tester_rollen.nischen nutzen diese Keys (ILIKE-Matching in tester_sieht_nische).
+- **/freigaben** (Tester+Admin, sonst Redirect /feed): Tabs Ausstehend/Genehmigt/Abgelehnt, Karten mit Typ-Badge,
+  Datum, Relevanz x/10, Pexels-Vorschau, Nischen-Tags, Quellen-Link. Aktionen: Freigeben (→publiziert,
+  freigegeben_von, freigabe_datum), Ablehnen (Pflicht-Grund →abgelehnt, freigabe_kommentar), Bearbeiten-Modal
+  (Titel/Zusammenfassung/Nischen; "Speichern" hält ausstehend, "Speichern & Freigeben" publiziert).
+- **/quellen** (Tester+Admin): Formular Quelle vorschlagen (genehmigt=false), Liste genehmigter Quellen (read-only),
+  Admin sieht zusätzlich Vorschläge mit Genehmigen (genehmigt=true) / Ablehnen (delete).
+- **/admin** (nur Admin): Statistiken (admin_stats), Tester verwalten (admin_list_tester / admin_add_tester,
+  Nischen-Toggle + aktiv-Toggle direkt auf tester_rollen), Quellen genehmigen, letzte 10 Scan-Logs.
+- Navigation: Sidebar + BottomNav zeigen Freigaben (rotes Badge = Anzahl ausstehend), Quellen (Tester/Admin),
+  Admin (nur Admin) rollenabhängig.
+- Beispieldaten geseedet: 3 ausstehende Agent-Posts + 4 Scan-Logs (zum Testen der UI).
+- Hinweis: Michael ist Admin (kein Tester) → sieht via RLS alle ausstehenden Posts in /freigaben.
