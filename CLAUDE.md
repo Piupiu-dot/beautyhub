@@ -67,3 +67,48 @@ Live-URL: https://www.thebeautyhub.ch
   Nischen als cremefarbene Pills (max 5 + "+n"), Abmelden-Dialog. "App installieren"-Box #1c2b4a.
 - Dokumente: elegante Platzhalter-Seite (cremefarbener Block, Titel "Dokumente & Gesetzestexte" in #1c2b4a,
   Untertitel, "In Kürze verfügbar"-Badge). Frühere Demo-Liste entfernt.
+
+## Datenbank-Schema (Supabase, Projekt-ID ypdybccegznjlxzqqxut)
+Migrationen via Supabase MCP angewendet (kein lokaler supabase/migrations-Ordner). Region eu-west-1, Postgres 17.
+Bestehende Tabellen: users, profiles, posts, kommentare, inserate, dokumente, direktnachrichten, nachrichten, user_nischen.
+
+### Agent-Workflow-Tabellen (neu)
+**admins** — `user_id uuid PK → auth.users`, `erstellt_am`. Admin = Michael (michael.cunha.schilling@gmail.com).
+  Helper `public.is_admin()` (SECURITY DEFINER, search_path=public) prüft Mitgliedschaft ohne RLS-Rekursion.
+
+**quellen** — Scan-Quellen für den Agent:
+  `id uuid PK`, `url text NOT NULL UNIQUE`, `name text NOT NULL`, `beschreibung`, `nischen text[]`,
+  `rss_feed` (bevorzugt), `aktiv bool=true`, `vorgeschlagen_von → auth.users`, `genehmigt bool=false`,
+  `genehmigt_von → auth.users`, `genehmigt_am`, `letzter_scan`, `fehler_count int=0` (3x ohne Ergebnis → Alarm), `erstellt_am`.
+  Seed (5, alle genehmigt): BAG Schweiz (+RSS), Swissmedic, Cosmetica Suisse, SDKF, EU Kommission Kosmetik.
+
+**posts** — erweitert um: `status text='ausstehend'` CHECK(ausstehend|genehmigt|abgelehnt|publiziert|in_bearbeitung),
+  `freigegeben_von → auth.users`, `freigabe_datum`, `freigabe_kommentar`, `agent_erstellt bool=false`,
+  `pexels_bild_url`, `quellen_url`, `quellen_id → quellen`, `relevanz_score int` CHECK(1..10),
+  `url_hash text UNIQUE` (MD5 der Quellen-URL, Duplikatschutz), `volltext text` CHECK(≤500 Zeichen, Copyright).
+  Index: status, quellen_id. WICHTIG: User-Community-Posts werden mit status='publiziert' eingefügt (kein Freigabe-Flow).
+
+**tester_rollen** — `id PK`, `user_id → auth.users UNIQUE`, `nischen text[]` (Zuständigkeit; 'alle' = alle),
+  `kann_quellen_vorschlagen bool=true`, `aktiv bool=true`, `erstellt_am`.
+
+**scan_logs** — `id PK`, `quelle_id → quellen`, `scan_zeitpunkt=now()`, `status` CHECK(erfolg|fehler|keine_neuen_inhalte),
+  `gefundene_artikel int=0`, `weitergeleitete_artikel int=0` (relevanz_score≥7), `fehler_meldung`, `dauer_sekunden`.
+
+**freigabe_reminder** — `id PK`, `post_id → posts`, `tester_id → tester_rollen`,
+  `erster_reminder` (24h), `zweiter_reminder` (48h, Eskalation Admin), `erledigt bool=false`.
+
+### RLS (alle Tabellen aktiv)
+Helper: `is_admin()`, `is_tester()`, `tester_sieht_nische(post_nischen text)` (SECURITY DEFINER; EXECUTE nur authenticated+service_role).
+- **posts**: publizierte für alle lesbar; Autor sieht eigene; Tester sehen ausstehende ihrer Nischen;
+  Admin alles; authenticated insert eigene (autor_id=auth.uid()); Tester update ausstehende ihrer Nische.
+- **quellen**: authenticated sehen genehmigte (+ eigene Vorschläge); Tester können vorschlagen (genehmigt=false, eigene);
+  nur Admin genehmigt/verwaltet.
+- **tester_rollen**: nur Admin (lesen+schreiben).
+- **scan_logs**: nur Admin.
+- **freigabe_reminder**: Tester sehen eigene; Admin alle.
+- **admins**: nur Admin.
+Agent/Cron arbeitet via service_role (umgeht RLS).
+
+### Offene Sicherheits-Hinweise (Supabase Advisor)
+- "Leaked Password Protection" in Auth aktivieren (HaveIBeenPwned) – Auth-Setting, nicht via SQL.
+- Vorbestehende Tabellen users/user_nischen/dokumente/direktnachrichten haben RLS aktiv, aber keine Policies (nicht Teil dieses Tasks).

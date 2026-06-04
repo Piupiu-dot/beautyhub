@@ -50,7 +50,7 @@ export default function CommunityPage() {
 
   async function sub() {
     if (!txt.trim() || !user) return
-    await supabase.from('posts').insert({ titel: txt.substring(0, 80), inhalt: txt, typ: 'community', nischen: selN.join(','), autor_id: user.id, autor_name: user.user_metadata?.name || user.email, ist_agent: false, likes: 0 })
+    await supabase.from('posts').insert({ titel: txt.substring(0, 80), inhalt: txt, typ: 'community', nischen: selN.join(','), autor_id: user.id, autor_name: user.user_metadata?.name || user.email, ist_agent: false, likes: 0, status: 'publiziert' })
     setModal(false); setTxt(''); setSelN([]); load()
   }
 
