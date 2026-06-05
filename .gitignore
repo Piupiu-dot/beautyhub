@@ -10,3 +10,7 @@ next-env.d.ts
 
 # TypeScript incremental build info
 *.tsbuildinfo
+
+# Agent-Laufzeit-Artefakte
+agent/dry-run-results.json
+agent/*.log

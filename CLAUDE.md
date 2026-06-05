@@ -150,6 +150,11 @@ Setup/Keys/Cron: siehe agent/README.md. Konfiguration in agent/.env (NIE committ
 - WICHTIG: Agent braucht service_role-Key (SUPABASE_AGENT_KEY) um RLS zu umgehen (ausstehende Posts anlegen, tester_rollen lesen). Nur server-seitig, nie im Frontend.
 - Claude-typ GESETZ/NEWS/TREND/KI → posts.typ (gesetz/news/trend/news); Nischen-Labels → Keys (lib/nischen-Vokabular).
 - scan.js gibt rss-parser Browser-Header mit (User-Agent + Accept), sonst antworten manche APIs (z.B. Fedlex) mit 406.
+- Fedlex-Quellen (rss_feed enthält 'fedlex') nutzen einen STRIKTEN Beauty-Vorfilter (FEDLEX_KEYWORDS: Kosmetik,
+  Kosmetikverordnung, Gebrauchsgegenstände, Hautpflege, Körperpflege, VKos, LGV), damit allgemeine Bundesverordnungen
+  Claude nicht erreichen. Andere Quellen behalten den allgemeinen Keyword-Filter (DE/FR/IT/EN).
+- Cron auf Mac mini installiert (crontab): scan 07:00, monitor stündlich, reminder 11:00 – absoluter node-Pfad
+  /opt/homebrew/opt/node@22/bin/node, Logs in agent/. macOS: cron braucht Full Disk Access + wachen Mac (pmset).
 
 ### Quellen-RSS-Status (Stand Recherche, validiert per HTTP-GET)
 - ✅ verifiziert (200 + valides RSS): Swissmedic (fetchrss), Swissmedic Vigilance (fetchrss),

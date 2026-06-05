@@ -33,6 +33,13 @@ const KEYWORDS = [
   'regulation','directive','authorization','prohibition','amendment','law','requirement','cosmetic','laser','treatment',
 ].map((k) => k.toLowerCase())
 
+// Strikter Beauty-Vorfilter NUR für Fedlex/Bundesrecht-Quellen:
+// allgemeine Bundesverordnungen (z.B. Sanktionen) sollen Claude NICHT erreichen.
+const FEDLEX_KEYWORDS = [
+  'kosmetik','kosmetikverordnung','gebrauchsgegenstände','gebrauchsgegenstande',
+  'hautpflege','körperpflege','koerperpflege','vkos','lgv',
+].map((k) => k.toLowerCase())
+
 // ---------- Pexels-Fallback pro Nische ----------
 const PEXELS_FALLBACK = {
   'Laser & IPL': 'professional laser treatment salon',
@@ -93,6 +100,14 @@ function hatKeyword(text) {
   const t = (text || '').toLowerCase()
   return KEYWORDS.some((k) => t.includes(k))
 }
+
+function hatBeautyKeyword(text) {
+  const t = (text || '').toLowerCase()
+  return FEDLEX_KEYWORDS.some((k) => t.includes(k))
+}
+
+// Fedlex/Bundesrecht-Quelle? (am RSS-Host erkannt)
+const istFedlexQuelle = (quelle) => (quelle.rss_feed || '').toLowerCase().includes('fedlex')
 
 // Titel-Ähnlichkeit (Token-Jaccard) – 0..1
 function aehnlichkeit(a, b) {
@@ -230,6 +245,7 @@ async function main() {
     if (budgetGestoppt) break
     const qStart = Date.now()
     let gefunden = 0, weitergeleitet = 0, scanStatus = 'keine_neuen_inhalte', fehlerMeldung = null
+    const fedlex = istFedlexQuelle(quelle)
     try {
       // 4a. Artikel holen
       let artikel = await holeArtikel(quelle)
@@ -247,8 +263,9 @@ async function main() {
         const { data: dup } = await supabase.from('posts').select('id').eq('url_hash', hash).maybeSingle()
         if (dup) continue
 
-        // 4d. Keyword-Vorfilter
-        if (!hatKeyword(a.titel + ' ' + a.inhalt)) continue
+        // 4d. Keyword-Vorfilter (Fedlex: strikt beauty-spezifisch, sonst allgemein)
+        const filterText = a.titel + ' ' + a.inhalt
+        if (fedlex ? !hatBeautyKeyword(filterText) : !hatKeyword(filterText)) continue
 
         // 4e. Titel-Ähnlichkeit (80% -> überspringen)
         if (gesehenTitel.some((t) => aehnlichkeit(t, a.titel) >= 0.8)) continue
