@@ -125,7 +125,13 @@ async function mitRetry(fn) {
 }
 
 // ---------- Artikel aus einer Quelle holen ----------
-const rss = new RSSParser({ timeout: cfg.REQUEST_TIMEOUT_MS })
+const rss = new RSSParser({
+  timeout: cfg.REQUEST_TIMEOUT_MS,
+  headers: {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) BeautyHubBot/1.0',
+    Accept: 'application/rss+xml, application/atom+xml, application/xml;q=0.9, text/xml;q=0.8, */*;q=0.7',
+  },
+})
 
 async function holeArtikel(quelle) {
   if (quelle.rss_feed) {

@@ -149,3 +149,13 @@ Setup/Keys/Cron: siehe agent/README.md. Konfiguration in agent/.env (NIE committ
 - **config.js**: Budget/Limits/Timeouts. **healthchecks.io**: Period 1d/Grace 1h → Alarm wenn 25h kein Ping.
 - WICHTIG: Agent braucht service_role-Key (SUPABASE_AGENT_KEY) um RLS zu umgehen (ausstehende Posts anlegen, tester_rollen lesen). Nur server-seitig, nie im Frontend.
 - Claude-typ GESETZ/NEWS/TREND/KI → posts.typ (gesetz/news/trend/news); Nischen-Labels → Keys (lib/nischen-Vokabular).
+- scan.js gibt rss-parser Browser-Header mit (User-Agent + Accept), sonst antworten manche APIs (z.B. Fedlex) mit 406.
+
+### Quellen-RSS-Status (Stand Recherche, validiert per HTTP-GET)
+- ✅ verifiziert (200 + valides RSS): Swissmedic (fetchrss), Swissmedic Vigilance (fetchrss),
+  EUR-Lex/EU Kommission Kosmetik (ec.europa.eu has-rss cosmetic-products), Fedlex Amtliche Sammlung (fedlex.data.admin.ch/api/rss-oc-de.xml).
+- ⚠️ unverifiziert: BAG Schweiz & BLV (www.admin.ch medienmitteilungen.rss) – admin.ch-WAF blockt Datacenter-IPs (403/404);
+  vom Mac-mini (CH-Wohn-IP) wahrscheinlich ok, dort testen. monitor.js alarmiert bei fehler_count≥3.
+- ❌ kein RSS → aktiv=false: Cosmetica Suisse, SDKF.
+- Dry-Run-Validierung: Pipeline ruft Claude korrekt auf (Kosten >0, gedeckelt). 0 relevant = aktuell keine
+  beauty-spezifischen Treffer im 7-Tage-Fenster (Feeds funktionieren, Claude filtert korrekt).
